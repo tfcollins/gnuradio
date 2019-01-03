@@ -24,6 +24,13 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <stdlib.h>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+#ifndef M_E
+#define M_E 2.71828182845904523536
+#endif
+
 %}
 
 %option noyywrap reentrant bison-bridge nounistd always-interactive

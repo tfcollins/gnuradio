@@ -4,6 +4,9 @@
 
 %include "gnuradio.i"
 
+//load generated python docstrings
+%include "iio_swig_doc.i"
+
 %{
 #include "gnuradio/iio/device_source.h"
 #include "gnuradio/iio/device_sink.h"

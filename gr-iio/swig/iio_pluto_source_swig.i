@@ -7,6 +7,9 @@
 
 %include "gnuradio.i"
 
+//load generated python docstrings
+%include "iio_swig_doc.i"
+
 %{
 #include "gnuradio/iio/pluto_source.h"
 %}

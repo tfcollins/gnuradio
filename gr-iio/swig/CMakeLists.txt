@@ -1,4 +1,4 @@
-# Copyright 2011 Free Software Foundation, Inc.
+# Copyright 2019 Free Software Foundation, Inc.
 #
 # This file is part of GNU Radio
 #
@@ -18,57 +18,56 @@
 # Boston, MA 02110-1301, USA.
 
 ########################################################################
-# Check if there is C++ code at all
+# Setup swig generation
 ########################################################################
-# if(NOT iio_sources)
-# 	MESSAGE(STATUS "No C++ sources... skipping swig/")
-# 	return()
-# endif(NOT iio_sources)
-
-########################################################################
-# Include swig generation macros
-########################################################################
-# find_package(SWIG)
-# find_package(PythonLibs 2)
-# if(NOT SWIG_FOUND OR NOT PYTHONLIBS_FOUND)
-#     return()
-# endif()
 include(GrPython)
 include(GrSwig)
 
-
-########################################################################
-# Setup swig generation
-########################################################################
-# foreach(incdir ${GNURADIO_RUNTIME_INCLUDE_DIRS})
-#     list(APPEND GR_SWIG_INCLUDE_DIRS ${incdir}/gnuradio/swig)
-# endforeach(incdir)
 set(GR_SWIG_INCLUDE_DIRS
     ${GR_IIO_INCLUDE_DIRS}
     ${GNURADIO_RUNTIME_SWIG_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
 )
 
-set(GR_SWIG_LIBRARIES gnuradio-iio)
-GR_SWIG_MAKE(iio_swig iio_swig.i)
-GR_SWIG_MAKE(iio_pluto_source_swig iio_pluto_source_swig.i)
-GR_SWIG_MAKE(iio_pluto_sink_swig iio_pluto_sink_swig.i)
+set(GR_SWIG_DOC_FILE ${CMAKE_CURRENT_BINARY_DIR}/iio_swig_doc.i)
+set(GR_SWIG_DOC_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../include/gnuradio/iio)
+set(GR_SWIG_DOCS_TARGET_DEPS runtime_swig_swig_doc)
 
-########################################################################
-# Install the build swig module
-########################################################################
-GR_SWIG_INSTALL(TARGETS iio_swig iio_pluto_source_swig iio_pluto_sink_swig
-	DESTINATION ${GR_PYTHON_DIR}/gnuradio/iio
-	COMPONENT "iio_python")
+set(GR_SWIG_LIBRARIES gnuradio-iio)
+
+set(GR_SWIG_BLOCK_IFILES
+  iio_swig
+  iio_pluto_source_swig
+  iio_pluto_sink_swig
+)
+
+foreach(swigfile ${GR_SWIG_BLOCK_IFILES})
+  set(GR_SWIG_DOC_FILE ${CMAKE_CURRENT_BINARY_DIR}/${swigfile}_doc.i)
+  set(GR_SWIG_DOC_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/gnuradio/iio
+    ${CMAKE_CURRENT_BINARY_DIR}/../include/gnuradio/iio
+  )
+  set(GR_SWIG_DOCS_TARGET_DEPS runtime_swig_swig_doc)
+  set(GR_SWIG_LIBRARIES gnuradio-iio
+    gnuradio-filter gnuradio-analog gnuradio-blocks)
+  GR_SWIG_MAKE(${swigfile} ${swigfile}.i)
+
+  GR_SWIG_INSTALL(
+    TARGETS ${swigfile}
+    DESTINATION ${GR_PYTHON_DIR}/gnuradio/iio
+  )
+
+  list(APPEND SWIGFILES ${swigfile}.i)
+  list(APPEND SWIGDOCFILES ${CMAKE_CURRENT_BINARY_DIR}/${swigfile}_doc.i)
+endforeach(swigfile)
+
 
 ########################################################################
 # Install swig .i files for development
 ########################################################################
 install(
     FILES
-    iio_swig.i
-    iio_pluto_source_swig.i
-    iio_pluto_sink_swig.i
-    DESTINATION ${GR_INCLUDE_DIR}/swig
-		COMPONENT "iio_swig"
+    ${SWIGFILES}
+    ${SWIGDOCFILES}
+    DESTINATION ${GR_INCLUDE_DIR}/gnuradio/swig
 )

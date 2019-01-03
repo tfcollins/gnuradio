@@ -17,10 +17,13 @@
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
 
-file(GLOB xml_files "*.xml")
-install(FILES ${xml_files}
-    DESTINATION ${GRC_BLOCKS_DIR} COMPONENT "iio_python"
-)
+# file(GLOB xml_files "*.xml")
+# install(FILES ${xml_files}
+#     DESTINATION ${GRC_BLOCKS_DIR} COMPONENT "iio_python"
+# )
+file(GLOB yml_files "*.yml")
+install(FILES ${yml_files} DESTINATION ${GRC_BLOCKS_DIR})
+
 #install(FILES
 #    iio_device_source.xml iio_device_sink.xml
 #	iio_fmcomms2_source.xml iio_fmcomms2_sink.xml
