@@ -20,18 +20,16 @@
 # Boston, MA 02110-1301, USA.
 #
 
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from gnuradio import gr
 from gnuradio import blocks
 import sys
-
-try:
-    import scipy
-except ImportError:
-    print "Error: Program requires scipy (see: www.scipy.org)."
-    sys.exit(1)
+import numpy
 
 def main():
-    data = scipy.arange(0, 32000, 1).tolist()
+    data = numpy.arange(0, 32000, 1).tolist()
     trig = 100*[0,] + 100*[1,]
 
     src = blocks.vector_source_s(data, True)
@@ -52,5 +50,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

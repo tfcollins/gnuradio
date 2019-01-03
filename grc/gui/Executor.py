@@ -15,14 +15,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-import gobject
+from __future__ import absolute_import
+
 import os
-import threading
 import shlex
 import subprocess
-import sys
-import re
+import threading
+import time
 from distutils.spawn import find_executable
+
+from gi.repository import GLib
 
 from ..core import Messages
 
@@ -33,19 +35,20 @@ class ExecFlowGraphThread(threading.Thread):
     def __init__(self, flow_graph_page, xterm_executable, callback):
         """
         ExecFlowGraphThread constructor.
-
-        Args:
-            action_handler: an instance of an ActionHandler
         """
         threading.Thread.__init__(self)
 
         self.page = flow_graph_page  # store page and don't use main window calls in run
+        self.flow_graph = self.page.flow_graph
         self.xterm_executable = xterm_executable
         self.update_callback = callback
 
         try:
-            self.process = self._popen()
-            self.page.set_proc(self.process)
+            if self.flow_graph.get_option('output_language') == 'python':
+                self.process = self.page.process = self._popen()
+            elif self.flow_graph.get_option('output_language') == 'cpp':
+                self.process = self.page.process = self._cpp_popen()
+
             self.update_callback()
             self.start()
         except Exception as e:
@@ -56,16 +59,9 @@ class ExecFlowGraphThread(threading.Thread):
         """
         Execute this python flow graph.
         """
-        run_command = self.page.get_flow_graph().get_option('run_command')
         generator = self.page.get_generator()
-
-        try:
-            run_command = run_command.format(
-                python=shlex_quote(sys.executable),
-                filename=shlex_quote(generator.file_path))
-            run_command_args = shlex.split(run_command)
-        except Exception as e:
-            raise ValueError("Can't parse run command {!r}: {0}".format(run_command, e))
+        run_command = self.flow_graph.get_run_command(generator.file_path)
+        run_command_args = shlex.split(run_command)
 
         # When in no gui mode on linux, use a graphical terminal (looks nice)
         xterm_executable = find_executable(self.xterm_executable)
@@ -83,39 +79,52 @@ class ExecFlowGraphThread(threading.Thread):
             shell=False, universal_newlines=True
         )
 
+    def _cpp_popen(self):
+        """
+        Execute this C++ flow graph after generating and compiling it.
+        """
+        generator = self.page.get_generator()
+        run_command = generator.file_path + '/build/' + self.flow_graph.get_option('id')
+
+        dirname = generator.file_path
+        builddir = os.path.join(dirname, 'build')
+
+        if os.path.isfile(run_command):
+            os.remove(run_command)
+
+        xterm_executable = find_executable(self.xterm_executable)
+
+        run_command_args = ['cmake .. &&', 'make && ', xterm_executable, '-e', run_command]
+        Messages.send_start_exec(' '.join(run_command_args))
+
+        return subprocess.Popen(
+            args=' '.join(run_command_args),
+            cwd=builddir,
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            shell=True, universal_newlines=True
+        )
+
     def run(self):
         """
         Wait on the executing process by reading from its stdout.
-        Use gobject.idle_add when calling functions that modify gtk objects.
+        Use GObject.idle_add when calling functions that modify gtk objects.
         """
         # handle completion
         r = "\n"
         while r:
-            gobject.idle_add(Messages.send_verbose_exec, r)
-            r = os.read(self.process.stdout.fileno(), 1024)
-        self.process.poll()
-        gobject.idle_add(self.done)
+            GLib.idle_add(Messages.send_verbose_exec, r)
+            r = self.process.stdout.read(1)
+
+        # Properly close pipe before thread is terminated
+        self.process.stdout.close()
+        while self.process.poll() is None:
+            # Wait for the process to fully terminate
+            time.sleep(0.05)
+
+        GLib.idle_add(self.done)
 
     def done(self):
         """Perform end of execution tasks."""
         Messages.send_end_exec(self.process.returncode)
-        self.page.set_proc(None)
+        self.page.process = None
         self.update_callback()
-
-
-###########################################################
-# back-port from python3
-###########################################################
-_find_unsafe = re.compile(r'[^\w@%+=:,./-]').search
-
-
-def shlex_quote(s):
-    """Return a shell-escaped version of the string *s*."""
-    if not s:
-        return "''"
-    if _find_unsafe(s) is None:
-        return s
-
-    # use single quotes, and put single quotes into double quotes
-    # the string $'b is then quoted as '$'"'"'b'
-    return "'" + s.replace("'", "'\"'\"'") + "'"

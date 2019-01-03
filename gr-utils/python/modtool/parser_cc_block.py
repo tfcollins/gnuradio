@@ -19,6 +19,10 @@
 # Boston, MA 02110-1301, USA.
 #
 ''' A parser for blocks written in C++ '''
+
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import re
 import sys
 
@@ -42,14 +46,14 @@ class ParserCCBlock(object):
             E.g., for sizeof(int), it will return 'int'.
             Returns a list! """
             if 'gr::io_signature::makev' in iosigcall:
-                print 'tbi'
+                print('tbi')
                 raise ValueError
             return {'type': [_typestr_to_iotype(x) for x in typestr.split(',')],
                     'vlen': [_typestr_to_vlen(x)   for x in typestr.split(',')]
                    }
         def _typestr_to_iotype(typestr):
             """ Convert a type string (e.g. sizeof(int) * vlen) to the type (e.g. 'int'). """
-            type_match = re.search('sizeof\s*\(([^)]*)\)', typestr)
+            type_match = re.search(r'sizeof\s*\(([^)]*)\)', typestr)
             if type_match is None:
                 return self.type_trans('char')
             return self.type_trans(type_match.group(1))
@@ -72,25 +76,25 @@ class ParserCCBlock(object):
             elif len(vlen_parts) > 1:
                 return '*'.join(vlen_parts).strip()
         iosig = {}
-        iosig_regex = '(?P<incall>gr::io_signature::make[23v]?)\s*\(\s*(?P<inmin>[^,]+),\s*(?P<inmax>[^,]+),' + \
-                      '\s*(?P<intype>(\([^\)]*\)|[^)])+)\),\s*' + \
-                      '(?P<outcall>gr::io_signature::make[23v]?)\s*\(\s*(?P<outmin>[^,]+),\s*(?P<outmax>[^,]+),' + \
-                      '\s*(?P<outtype>(\([^\)]*\)|[^)])+)\)'
+        iosig_regex = r'(?P<incall>gr::io_signature::make[23v]?)\s*\(\s*(?P<inmin>[^,]+),\s*(?P<inmax>[^,]+),' + \
+                      r'\s*(?P<intype>(\([^\)]*\)|[^)])+)\),\s*' + \
+                      r'(?P<outcall>gr::io_signature::make[23v]?)\s*\(\s*(?P<outmin>[^,]+),\s*(?P<outmax>[^,]+),' + \
+                      r'\s*(?P<outtype>(\([^\)]*\)|[^)])+)\)'
         iosig_match = re.compile(iosig_regex, re.MULTILINE).search(self.code_cc)
         try:
             iosig['in'] = _figure_out_iotype_and_vlen(iosig_match.group('incall'),
                                                       iosig_match.group('intype'))
             iosig['in']['min_ports'] = iosig_match.group('inmin')
             iosig['in']['max_ports'] = iosig_match.group('inmax')
-        except ValueError, Exception:
-            print "Error: Can't parse input signature."
+        except Exception:
+            print("Error: Can't parse input signature.")
         try:
             iosig['out'] = _figure_out_iotype_and_vlen(iosig_match.group('outcall'),
                                                        iosig_match.group('outtype'))
             iosig['out']['min_ports'] = iosig_match.group('outmin')
             iosig['out']['max_ports'] = iosig_match.group('outmax')
-        except ValueError, Exception:
-            print "Error: Can't parse output signature."
+        except Exception:
+            print("Error: Can't parse output signature.")
         return iosig
 
 
@@ -205,15 +209,15 @@ class ParserCCBlock(object):
                     continue
             return param_list
         # Go, go, go!
-        if self.version == '37':
-            make_regex = 'static\s+sptr\s+make\s*'
+        if self.version in ('37', '38'):
+            make_regex = r'static\s+sptr\s+make\s*'
         else:
-            make_regex = '(?<=_API)\s+\w+_sptr\s+\w+_make_\w+\s*'
+            make_regex = r'(?<=_API)\s+\w+_sptr\s+\w+_make_\w+\s*'
         make_match = re.compile(make_regex, re.MULTILINE).search(self.code_h)
         try:
             params_list = _scan_param_list(make_match.end(0))
         except ValueError as ve:
-            print "Can't parse the argument list: ", ve.args[0]
+            print("Can't parse the argument list: ", ve.args[0])
             sys.exit(0)
         params = []
         for plist in params_list:
@@ -222,4 +226,3 @@ class ParserCCBlock(object):
                            'default': plist[2],
                            'in_constructor': True})
         return params
-

@@ -16,13 +16,19 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 
-class FlowGraphProxy(object):
+from __future__ import absolute_import
+from six.moves import range
+
+from ..utils import expr_utils
+from operator import methodcaller, attrgetter
+
+class FlowGraphProxy(object):  # TODO: move this in a refactored Generator
 
     def __init__(self, fg):
-        self._fg = fg
+        self.orignal_flowgraph = fg
 
     def __getattr__(self, item):
-        return getattr(self._fg, item)
+        return getattr(self.orignal_flowgraph, item)
 
     def get_hier_block_stream_io(self, direction):
         """
@@ -34,7 +40,7 @@ class FlowGraphProxy(object):
         Returns:
             a list of dicts with: type, label, vlen, size, optional
         """
-        return filter(lambda p: p['type'] != "message", self.get_hier_block_io(direction))
+        return [p for p in self.get_hier_block_io(direction) if p['type'] != "message"]
 
     def get_hier_block_message_io(self, direction):
         """
@@ -46,7 +52,7 @@ class FlowGraphProxy(object):
         Returns:
             a list of dicts with: type, label, vlen, size, optional
         """
-        return filter(lambda p: p['type'] == "message", self.get_hier_block_io(direction))
+        return [p for p in self.get_hier_block_io(direction) if p['type'] == "message"]
 
     def get_hier_block_io(self, direction):
         """
@@ -62,16 +68,18 @@ class FlowGraphProxy(object):
             self.get_pad_sinks() if direction in ('source', 'out') else []
         ports = []
         for pad in pads:
+            type_param = pad.params['type']
             master = {
-                'label': str(pad.get_param('label').get_evaluated()),
-                'type': str(pad.get_param('type').get_evaluated()),
-                'vlen': str(pad.get_param('vlen').get_value()),
-                'size': pad.get_param('type').get_opt('size'),
-                'optional': bool(pad.get_param('optional').get_evaluated()),
+                'label': str(pad.params['label'].get_evaluated()),
+                'type': str(pad.params['type'].get_evaluated()),
+                'vlen': str(pad.params['vlen'].get_value()),
+                'size':  type_param.options.attributes[type_param.get_value()]['size'],
+                'cpp_size':  type_param.options.attributes[type_param.get_value()]['cpp_size'],
+                'optional': bool(pad.params['optional'].get_evaluated()),
             }
-            num_ports = pad.get_param('num_streams').get_evaluated()
+            num_ports = pad.params['num_streams'].get_evaluated()
             if num_ports > 1:
-                for i in xrange(num_ports):
+                for i in range(num_ports):
                     clone = master.copy()
                     clone['label'] += str(i)
                     ports.append(clone)
@@ -86,8 +94,8 @@ class FlowGraphProxy(object):
         Returns:
             a list of pad source blocks in this flow graph
         """
-        pads = filter(lambda b: b.get_key() == 'pad_source', self.get_enabled_blocks())
-        return sorted(pads, lambda x, y: cmp(x.get_id(), y.get_id()))
+        pads = [b for b in self.get_enabled_blocks() if b.key == 'pad_source']
+        return sorted(pads, key=lambda x: x.name)
 
     def get_pad_sinks(self):
         """
@@ -96,8 +104,8 @@ class FlowGraphProxy(object):
         Returns:
             a list of pad sink blocks in this flow graph
         """
-        pads = filter(lambda b: b.get_key() == 'pad_sink', self.get_enabled_blocks())
-        return sorted(pads, lambda x, y: cmp(x.get_id(), y.get_id()))
+        pads = [b for b in self.get_enabled_blocks() if b.key == 'pad_sink']
+        return sorted(pads, key=lambda x: x.name)
 
     def get_pad_port_global_key(self, port):
         """
@@ -112,15 +120,74 @@ class FlowGraphProxy(object):
         for pad in pads:
             # using the block param 'type' instead of the port domain here
             # to emphasize that hier block generation is domain agnostic
-            is_message_pad = pad.get_param('type').get_evaluated() == "message"
-            if port.get_parent() == pad:
+            is_message_pad = pad.params['type'].get_evaluated() == "message"
+            if port.parent == pad:
                 if is_message_pad:
-                    key = pad.get_param('label').get_value()
+                    key = pad.params['label'].get_value()
                 else:
-                    key = str(key_offset + int(port.get_key()))
+                    key = str(key_offset + int(port.key))
                 return key
             else:
                 # assuming we have either only sources or sinks
                 if not is_message_pad:
-                    key_offset += len(pad.get_ports())
+                    key_offset += len(pad.sinks) + len(pad.sources)
         return -1
+
+    def get_cpp_variables(self):
+        """
+        Get a list of all variables (C++) in this flow graph namespace.
+        Exclude parameterized variables.
+
+        Returns:
+            a sorted list of variable blocks in order of dependency (indep -> dep)
+        """
+        variables = [block for block in self.iter_enabled_blocks() if block.is_variable]
+        return expr_utils.sort_objects(variables, attrgetter('name'), methodcaller('get_cpp_var_make'))
+
+    def includes(self):
+        """
+        Get a set of all include statements (C++) in this flow graph namespace.
+
+        Returns:
+            a list of #include statements
+        """
+        return [block.cpp_templates.render('includes') for block in self.iter_enabled_blocks()]
+
+    def links(self):
+        """
+        Get a set of all libraries to link against (C++) in this flow graph namespace.
+
+        Returns:
+            a list of GNU Radio modules
+        """
+        return [block.cpp_templates.render('link') for block in self.iter_enabled_blocks()]
+
+def get_hier_block_io(flow_graph, direction, domain=None):
+    """
+    Get a list of io ports for this flow graph.
+
+    Returns a list of dicts with: type, label, vlen, size, optional
+    """
+    pads = flow_graph.get_pad_sources() if direction in ('sink', 'in') else \
+        flow_graph.get_pad_sinks() if direction in ('source', 'out') else []
+    ports = []
+    for pad in pads:
+        type_param = pad.params['type']
+        master = {
+            'label': str(pad.params['label'].get_evaluated()),
+            'type': str(pad.params['type'].get_evaluated()),
+            'vlen': str(pad.params['vlen'].get_value()),
+            'size':  type_param.options.attributes[type_param.get_value()]['size'],
+            'optional': bool(pad.params['optional'].get_evaluated()),
+        }
+        num_ports = pad.params['num_streams'].get_evaluated()
+        if num_ports > 1:
+            for i in range(num_ports):
+                clone = master.copy()
+                clone['label'] += str(i)
+                ports.append(clone)
+        else:
+            ports.append(master)
+    if domain is not None:
+        ports = [p for p in ports if p.domain == domain]
+    return ports

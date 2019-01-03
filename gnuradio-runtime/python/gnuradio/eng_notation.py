@@ -21,6 +21,10 @@
 """
 Display numbers as strings using engineering notation.
 """
+from __future__ import unicode_literals
+
+import six
+
 
 scale_factor = {}
 scale_factor['E'] = 1e18
@@ -65,11 +69,13 @@ def num_to_str (n, precision=6):
 def str_to_num (value):
     '''Convert a string in engineering notation to a number.  E.g., '15m' -> 15e-3'''
     try:
+        if not isinstance(value, six.string_types):
+            raise TypeError("Value must be a string")
         scale = 1.0
         suffix = value[-1]
-        if scale_factor.has_key (suffix):
+        if suffix in scale_factor:
             return float (value[0:-1]) * scale_factor[suffix]
         return float (value)
-    except:
-        raise RuntimeError (
+    except (TypeError, KeyError, ValueError):
+        raise ValueError (
             "Invalid engineering notation value: %r" % (value,))

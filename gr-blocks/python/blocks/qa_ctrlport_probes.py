@@ -20,6 +20,7 @@
 # Boston, MA 02110-1301, USA.
 #
 
+
 import sys, time, random, numpy
 from gnuradio import gr, gr_unittest, blocks
 import os, struct, re
@@ -36,7 +37,7 @@ class test_ctrlport_probes(gr_unittest.TestCase):
         self.tb = None
 
     def test_001(self):
-        data = range(1,9)
+        data = list(range(1,9))
 
         self.src = blocks.vector_source_c(data, True)
         self.probe = blocks.ctrlport_probe2_c("samples","Complex",
@@ -57,8 +58,8 @@ class test_ctrlport_probes(gr_unittest.TestCase):
 
         # Get available endpoint
         ep = gr.rpcmanager_get().endpoints()[0]
-        hostname = re.search("-h (\S+|\d+\.\d+\.\d+\.\d+)", ep).group(1)
-        portnum = re.search("-p (\d+)", ep).group(1)
+        hostname = re.search(r"-h (\S+|\d+\.\d+\.\d+\.\d+)", ep).group(1)
+        portnum = re.search(r"-p (\d+)", ep).group(1)
         argv = [None, hostname, portnum]
 
         # Initialize a simple ControlPort client from endpoint
@@ -68,7 +69,7 @@ class test_ctrlport_probes(gr_unittest.TestCase):
 
         # Get all exported knobs
         ret = radio.getKnobs([probe_name + "::samples"])
-        for name in ret.keys():
+        for name in list(ret.keys()):
             # Get data in probe, which might be offset; find the
             # beginning and unwrap.
             result = ret[name].value
@@ -81,7 +82,7 @@ class test_ctrlport_probes(gr_unittest.TestCase):
 
 
     def test_002(self):
-        data = range(1,9)
+        data = list(range(1,9))
 
         self.src = blocks.vector_source_f(data, True)
         self.probe = blocks.ctrlport_probe2_f("samples","Floats",
@@ -98,8 +99,8 @@ class test_ctrlport_probes(gr_unittest.TestCase):
 
         # Get available endpoint
         ep = gr.rpcmanager_get().endpoints()[0]
-        hostname = re.search("-h (\S+|\d+\.\d+\.\d+\.\d+)", ep).group(1)
-        portnum = re.search("-p (\d+)", ep).group(1)
+        hostname = re.search(r"-h (\S+|\d+\.\d+\.\d+\.\d+)", ep).group(1)
+        portnum = re.search(r"-p (\d+)", ep).group(1)
         argv = [None, hostname, portnum]
 
         # Initialize a simple ControlPort client from endpoint
@@ -109,7 +110,7 @@ class test_ctrlport_probes(gr_unittest.TestCase):
 
         # Get all exported knobs
         ret = radio.getKnobs([probe_name + "::samples"])
-        for name in ret.keys():
+        for name in list(ret.keys()):
             # Get data in probe, which might be offset; find the
             # beginning and unwrap.
             result = ret[name].value
@@ -121,7 +122,7 @@ class test_ctrlport_probes(gr_unittest.TestCase):
         self.tb.wait()
 
     def test_003(self):
-        data = range(1,9)
+        data = list(range(1,9))
 
         self.src = blocks.vector_source_i(data, True)
         self.probe = blocks.ctrlport_probe2_i("samples","Integers",
@@ -138,8 +139,8 @@ class test_ctrlport_probes(gr_unittest.TestCase):
 
         # Get available endpoint
         ep = gr.rpcmanager_get().endpoints()[0]
-        hostname = re.search("-h (\S+|\d+\.\d+\.\d+\.\d+)", ep).group(1)
-        portnum = re.search("-p (\d+)", ep).group(1)
+        hostname = re.search(r"-h (\S+|\d+\.\d+\.\d+\.\d+)", ep).group(1)
+        portnum = re.search(r"-p (\d+)", ep).group(1)
         argv = [None, hostname, portnum]
 
         # Initialize a simple ControlPort client from endpoint
@@ -149,7 +150,7 @@ class test_ctrlport_probes(gr_unittest.TestCase):
 
         # Get all exported knobs
         ret = radio.getKnobs([probe_name + "::samples"])
-        for name in ret.keys():
+        for name in list(ret.keys()):
             # Get data in probe, which might be offset; find the
             # beginning and unwrap.
             result = ret[name].value
@@ -162,7 +163,7 @@ class test_ctrlport_probes(gr_unittest.TestCase):
 
 
     def test_004(self):
-        data = range(1,9)
+        data = list(range(1,9))
 
         self.src = blocks.vector_source_s(data, True)
         self.probe = blocks.ctrlport_probe2_s("samples","Shorts",
@@ -179,8 +180,8 @@ class test_ctrlport_probes(gr_unittest.TestCase):
 
         # Get available endpoint
         ep = gr.rpcmanager_get().endpoints()[0]
-        hostname = re.search("-h (\S+|\d+\.\d+\.\d+\.\d+)", ep).group(1)
-        portnum = re.search("-p (\d+)", ep).group(1)
+        hostname = re.search(r"-h (\S+|\d+\.\d+\.\d+\.\d+)", ep).group(1)
+        portnum = re.search(r"-p (\d+)", ep).group(1)
         argv = [None, hostname, portnum]
 
         # Initialize a simple ControlPort client from endpoint
@@ -190,7 +191,7 @@ class test_ctrlport_probes(gr_unittest.TestCase):
 
         # Get all exported knobs
         ret = radio.getKnobs([probe_name + "::samples"])
-        for name in ret.keys():
+        for name in list(ret.keys()):
             # Get data in probe, which might be offset; find the
             # beginning and unwrap.
             result = ret[name].value
@@ -202,7 +203,7 @@ class test_ctrlport_probes(gr_unittest.TestCase):
         self.tb.wait()
 
     def test_005(self):
-        data = range(1,9)
+        data = list(range(1,9))
 
         self.src = blocks.vector_source_b(data, True)
         self.probe = blocks.ctrlport_probe2_b("samples","Bytes",
@@ -219,8 +220,8 @@ class test_ctrlport_probes(gr_unittest.TestCase):
 
         # Get available endpoint
         ep = gr.rpcmanager_get().endpoints()[0]
-        hostname = re.search("-h (\S+|\d+\.\d+\.\d+\.\d+)", ep).group(1)
-        portnum = re.search("-p (\d+)", ep).group(1)
+        hostname = re.search(r"-h (\S+|\d+\.\d+\.\d+\.\d+)", ep).group(1)
+        portnum = re.search(r"-p (\d+)", ep).group(1)
         argv = [None, hostname, portnum]
 
         # Initialize a simple ControlPort client from endpoint
@@ -230,7 +231,7 @@ class test_ctrlport_probes(gr_unittest.TestCase):
 
         # Get all exported knobs
         ret = radio.getKnobs([probe_name + "::samples"])
-        for name in ret.keys():
+        for name in list(ret.keys()):
             # Get data in probe, which might be offset; find the
             # beginning and unwrap.
             result = ret[name].value

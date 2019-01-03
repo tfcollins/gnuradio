@@ -20,6 +20,7 @@
 # Boston, MA 02110-1301, USA.
 #
 
+
 import time
 import random
 import math
@@ -42,6 +43,7 @@ def convolution(A, B):
 class test_filterbank_vcvcf(gr_unittest.TestCase):
 
     def setUp(self):
+        random.seed(0)
         self.tb = gr.top_block()
 
     def tearDown(self):

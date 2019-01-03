@@ -18,14 +18,20 @@
 # Boston, MA 02110-1301, USA.
 #
 
+from __future__ import print_function
+from __future__ import division
+from __future__ import unicode_literals
+
 import sys
 import matplotlib
 matplotlib.use("QT4Agg")
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from gnuradio.ctrlport.GNURadioControlPortClient import GNURadioControlPortClient
-import scipy
-from scipy import fftpack
+from gnuradio.ctrlport.GNURadioControlPortClient import (
+    GNURadioControlPortClient, TTransportException,
+)
+import numpy
+from numpy.fft import fftpack
 
 """
 If a host is running the ATSC receiver chain with ControlPort
@@ -37,17 +43,17 @@ the link quality. This also gets the equalizer taps of the receiver
 and displays the frequency response.
 """
 
-class atsc_ctrlport_monitor:
+class atsc_ctrlport_monitor(object):
     def __init__(self, host, port):
         argv = [None, host, port]
         radiosys = GNURadioControlPortClient(argv=argv, rpcmethod='thrift')
         self.radio = radiosys.client
-        print self.radio
+        print(self.radio)
 
 
         vt_init_key = 'dtv_atsc_viterbi_decoder0::decoder_metrics'
         data = self.radio.getKnobs([vt_init_key])[vt_init_key]
-        init_metric = scipy.mean(data.value)
+        init_metric = numpy.mean(data.value)
         self._viterbi_metric = 100*[init_metric,]
 
         table_col_labels = ('Num Packets', 'Error Rate', 'Packet Error Rate',
@@ -98,27 +104,27 @@ class atsc_ctrlport_monitor:
             vt_decoder_metrics = data[vt_metrics_key]
             snr_est = data[snr_key]
 
-            vt_decoder_metrics = scipy.mean(vt_decoder_metrics.value)
+            vt_decoder_metrics = numpy.mean(vt_decoder_metrics.value)
             self._viterbi_metric.pop()
             self._viterbi_metric.insert(0, vt_decoder_metrics)
 
-        except:
+        except TTransportException:
             sys.stderr.write("Lost connection, exiting")
             sys.exit(1)
 
         ntaps = len(eqdata.value)
         taps.set_ydata(eqdata.value)
-        taps.set_xdata(xrange(ntaps))
+        taps.set_xdata(list(range(ntaps)))
         self._sp0.set_xlim(0, ntaps)
         self._sp0.set_ylim(min(eqdata.value), max(eqdata.value))
 
         fs = 6.25e6
-        freq = scipy.linspace(-fs/2, fs/2, 10000)
-        H = fftpack.fftshift(fftpack.fft(eqdata.value, 10000))
-        HdB = 20.0*scipy.log10(abs(H))
+        freq = numpy.linspace(-fs / 2, fs / 2, 10000)
+        H = numpy.fft.fftshift(fftpack.fft(eqdata.value, 10000))
+        HdB = 20.0*numpy.log10(abs(H))
         psd.set_ydata(HdB)
         psd.set_xdata(freq)
-        self._sp1.set_xlim(0, fs/2)
+        self._sp1.set_xlim(0, fs / 2)
         self._sp1.set_ylim([min(HdB), max(HdB)])
         self._sp1.set_yticks([min(HdB), max(HdB)])
         self._sp1.set_yticklabels(["min", "max"])
@@ -135,7 +141,7 @@ class atsc_ctrlport_monitor:
         table._cells[(1,0)]._text.set_text("{0}".format(rs_num_packets.value))
         table._cells[(1,1)]._text.set_text("{0:.2g}".format(ber))
         table._cells[(1,2)]._text.set_text("{0:.2g}".format(per))
-        table._cells[(1,3)]._text.set_text("{0:.1f}".format(scipy.mean(self._viterbi_metric)))
+        table._cells[(1,3)]._text.set_text("{0:.1f}".format(numpy.mean(self._viterbi_metric)))
         table._cells[(1,4)]._text.set_text("{0:.4f}".format(snr_est.value[0]))
 
         return (taps, psd, syms, table)

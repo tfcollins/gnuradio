@@ -20,6 +20,8 @@
 # Boston, MA 02110-1301, USA.
 # 
 
+from __future__ import division
+
 import random
 import math
 
@@ -28,6 +30,7 @@ from gnuradio import gr, gr_unittest, digital, filter, blocks, analog
 class test_fll_band_edge_cc(gr_unittest.TestCase):
 
     def setUp(self):
+        random.seed(0)
         self.tb = gr.top_block()
 
     def tearDown(self):
@@ -48,7 +51,7 @@ class test_fll_band_edge_cc(gr_unittest.TestCase):
 
         # Create a set of 1's and -1's, pulse shape and interpolate to sps
         random.seed(0)
-        data = [2.0*random.randint(0, 2) - 1.0 for i in xrange(200)]
+        data = [2.0*random.randint(0, 2) - 1.0 for i in range(200)]
         self.src = blocks.vector_source_c(data, False)
         self.rrc = filter.interp_fir_filter_ccf(sps, rrc_taps)
 

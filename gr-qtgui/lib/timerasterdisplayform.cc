@@ -20,10 +20,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <cmath>
+#include <gnuradio/qtgui/timerasterdisplayform.h>
+
 #include <QColorDialog>
 #include <QMessageBox>
-#include <gnuradio/qtgui/timerasterdisplayform.h>
+
+#include <cmath>
 #include <iostream>
 
 TimeRasterDisplayForm::TimeRasterDisplayForm(int nplots,
@@ -62,18 +64,18 @@ TimeRasterDisplayForm::TimeRasterDisplayForm(int nplots,
   // Now create our own menus
   for(int i = 0; i < nplots; i++) {
     d_line_title_act.push_back(new LineTitleAction(i, this));
-    connect(d_line_title_act[i], SIGNAL(whichTrigger(int, const QString&)),
-	    this, SLOT(setLineLabel(int, const QString&)));
+    connect(d_line_title_act[i], SIGNAL(whichTrigger(unsigned int, const QString&)),
+	    this, SLOT(setLineLabel(unsigned int, const QString&)));
     d_lines_menu[i]->addAction(d_line_title_act[i]);
 
     ColorMapMenu *colormap = new ColorMapMenu(i, this);
-    connect(colormap, SIGNAL(whichTrigger(int, const int, const QColor&, const QColor&)),
-	    this, SLOT(setColorMap(int, const int, const QColor&, const QColor&)));
+    connect(colormap, SIGNAL(whichTrigger(unsigned int, const int, const QColor&, const QColor&)),
+	    this, SLOT(setColorMap(unsigned int, const int, const QColor&, const QColor&)));
     d_lines_menu[i]->addMenu(colormap);
 
     d_marker_alpha_menu.push_back(new MarkerAlphaMenu(i, this));
-    connect(d_marker_alpha_menu[i], SIGNAL(whichTrigger(int, int)),
-	    this, SLOT(setAlpha(int, int)));
+    connect(d_marker_alpha_menu[i], SIGNAL(whichTrigger(unsigned int, unsigned int)),
+	    this, SLOT(setAlpha(unsigned int, unsigned int)));
     d_lines_menu[i]->addMenu(d_marker_alpha_menu[i]);
   }
 
@@ -134,25 +136,25 @@ TimeRasterDisplayForm::numCols()
 }
 
 int
-TimeRasterDisplayForm::getColorMap(int which)
+TimeRasterDisplayForm::getColorMap(unsigned int which)
 {
   return getPlot()->getIntensityColorMapType(which);
 }
 
 int
-TimeRasterDisplayForm::getAlpha(int which)
+TimeRasterDisplayForm::getAlpha(unsigned int which)
 {
   return getPlot()->getAlpha(which);
 }
 
 double
-TimeRasterDisplayForm::getMinIntensity(int which)
+TimeRasterDisplayForm::getMinIntensity(unsigned int which)
 {
   return getPlot()->getMinIntensity(which);
 }
 
 double
-TimeRasterDisplayForm::getMaxIntensity(int which)
+TimeRasterDisplayForm::getMaxIntensity(unsigned int which)
 {
   return getPlot()->getMaxIntensity(which);
 }
@@ -235,7 +237,7 @@ TimeRasterDisplayForm::setSampleRate(const QString &rate)
 }
 
 void
-TimeRasterDisplayForm::setColorMap(int which,
+TimeRasterDisplayForm::setColorMap(unsigned int which,
 				   const int newType,
 				   const QColor lowColor,
 				   const QColor highColor)
@@ -246,7 +248,7 @@ TimeRasterDisplayForm::setColorMap(int which,
 }
 
 void
-TimeRasterDisplayForm::setAlpha(int which, int alpha)
+TimeRasterDisplayForm::setAlpha(unsigned int which, unsigned int alpha)
 {
   getPlot()->setAlpha(which, alpha);
   getPlot()->replot();

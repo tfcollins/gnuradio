@@ -22,21 +22,33 @@
 Utility to help plotting data from files.
 """
 
-try:
-    import scipy
-except ImportError:
-    print "Please install SciPy to run this script (http://www.scipy.org/)"
-    raise SystemExit, 1
+from __future__ import print_function
+from __future__ import division
+from __future__ import unicode_literals
+
+from argparse import ArgumentParser
+
+import numpy
 
 try:
-    from pylab import *
+    from pylab import Button, connect, draw, figure, figtext, get_current_fig_manager, show, plot, rcParams
 except ImportError:
-    print "Please install Matplotlib to run this script (http://matplotlib.sourceforge.net/)"
-    raise SystemExit, 1
+    print("Please install Python Matplotlib (http://matplotlib.sourceforge.net/) and Python TkInter https://wiki.python.org/moin/TkInter to run this script")
+    raise SystemExit(1)
 
-from optparse import OptionParser
 
-class plot_data:
+datatype_lookup = {
+    "complex64": numpy.complex64,
+    "float32": numpy.float32,
+    "uint32": numpy.uint32,
+    "int32": numpy.int32,
+    "uint16": numpy.uint16,
+    "int16": numpy.int16,
+    "uint8": numpy.uint8,
+    "int8": numpy.int8,
+}
+
+class plot_data(object):
     def __init__(self, datatype, filenames, options):
         self.hfile = list()
         self.legend_text = list()
@@ -49,7 +61,9 @@ class plot_data:
         self.sample_rate = options.sample_rate
 
         self.datatype = datatype
-        self.sizeof_data = datatype().nbytes    # number of bytes per sample in file
+        if self.datatype is None:
+            self.datatype = datatype_lookup[options.data_type]
+        self.sizeof_data = self.datatype().nbytes    # number of bytes per sample in file
 
         self.axis_font_size = 16
         self.label_font_size = 18
@@ -85,12 +99,12 @@ class plot_data:
     def get_data(self, hfile):
         self.text_file_pos.set_text("File Position: %d" % (hfile.tell()//self.sizeof_data))
         try:
-            f = scipy.fromfile(hfile, dtype=self.datatype, count=self.block_length)
+            f = numpy.fromfile(hfile, dtype=self.datatype, count=self.block_length)
         except MemoryError:
-            print "End of File"
+            print("End of File")
         else:
-            self.f = scipy.array(f)
-            self.time = scipy.array([i*(1/self.sample_rate) for i in range(len(self.f))])
+            self.f = numpy.array(f)
+            self.time = numpy.array([i*(1 / self.sample_rate) for i in range(len(self.f))])
 
     def make_plots(self):
         self.sp_f = self.fig.add_subplot(2,1,1, position=[0.075, 0.2, 0.875, 0.6])
@@ -160,9 +174,27 @@ class plot_data:
                 hf.seek(-hf.tell(),1)
         self.update_plots()
 
+    @staticmethod
+    def setup_options():
+        description = "Takes a GNU Radio binary file and displays the samples versus time. You can set the block size to specify how many points to read in at a time and the start position in the file. By default, the system assumes a sample rate of 1, so in time, each sample is plotted versus the sample number. To set a true time axis, set the sample rate (-R or --sample-rate) to the sample rate used when capturing the samples."
+
+        parser = ArgumentParser(conflict_handler="resolve", description=description)
+        parser.add_argument("-d", "--data-type", default="complex64",
+                choices=("complex64", "float32", "uint32", "int32", "uint16",
+                    "int16", "uint8", "int8"),
+                help="Specify the data type [default=%(default)r]")
+        parser.add_argument("-B", "--block", type=int, default=1000,
+                help="Specify the block size [default=%(default)r]")
+        parser.add_argument("-s", "--start", type=int, default=0,
+                help="Specify where to start in the file [default=%(default)r]")
+        parser.add_argument("-R", "--sample-rate", type=float, default=1.0,
+                help="Set the sampler rate of the data [default=%(default)r]")
+        parser.add_argument("files", metavar="FILE", nargs='+',
+                help="Input file with samples")
+        return parser
 
 def find(item_in, list_search):
     try:
-	return list_search.index(item_in) != None
+        return list_search.index(item_in) != None
     except ValueError:
-	return False
+        return False

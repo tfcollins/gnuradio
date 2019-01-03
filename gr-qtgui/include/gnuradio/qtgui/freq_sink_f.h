@@ -62,12 +62,17 @@ namespace gr {
      * Message Ports:
      *
      * - freq (input):
-     *        Receives a PMT pair: (intern("freq"), double(frequency).
+     *        Receives a PMT pair: (intern("freq"), double(frequency)).
      *        This is used to retune the center frequency of the
      *        display's x-axis.
+     *      
+     * - bw (input):
+     *        Receives a PMT pair: (intern("bw"), double(bandwidth)).
+     *        This is used to programmatically change the bandwidth of
+     *        of the display's x-axis.
      *
      * - freq (output):
-     *        Produces a PMT pair with (intern("freq"), double(frequency).
+     *        Produces a PMT pair with (intern("freq"), double(frequency)).
      *        When a user double-clicks on the display, the block
      *        produces and emits a message containing the frequency of
      *        where on the x-axis the user clicked. This value can be
@@ -129,12 +134,12 @@ namespace gr {
 
       virtual void set_title(const std::string &title) = 0;
       virtual void set_y_label(const std::string &label, const std::string &unit) = 0;
-      virtual void set_line_label(int which, const std::string &label) = 0;
-      virtual void set_line_color(int which, const std::string &color) = 0;
-      virtual void set_line_width(int which, int width) = 0;
-      virtual void set_line_style(int which, int style) = 0;
-      virtual void set_line_marker(int which, int marker) = 0;
-      virtual void set_line_alpha(int which, double alpha) = 0;
+      virtual void set_line_label(unsigned int which, const std::string &label) = 0;
+      virtual void set_line_color(unsigned int which, const std::string &color) = 0;
+      virtual void set_line_width(unsigned int which, int width) = 0;
+      virtual void set_line_style(unsigned int which, int style) = 0;
+      virtual void set_line_marker(unsigned int which, int marker) = 0;
+      virtual void set_line_alpha(unsigned int which, double alpha) = 0;
 
       /*!
        *  Pass "true" to this function to only show the positive half
@@ -171,12 +176,12 @@ namespace gr {
                                     const std::string &tag_key="") = 0;
 
       virtual std::string title() = 0;
-      virtual std::string line_label(int which) = 0;
-      virtual std::string line_color(int which) = 0;
-      virtual int line_width(int which) = 0;
-      virtual int line_style(int which) = 0;
-      virtual int line_marker(int which) = 0;
-      virtual double line_alpha(int which) = 0;
+      virtual std::string line_label(unsigned int which) = 0;
+      virtual std::string line_color(unsigned int which) = 0;
+      virtual int line_width(unsigned int which) = 0;
+      virtual int line_style(unsigned int which) = 0;
+      virtual int line_marker(unsigned int which) = 0;
+      virtual double line_alpha(unsigned int which) = 0;
 
       virtual void set_size(int width, int height) = 0;
 

@@ -51,40 +51,6 @@ SET(GR_PKG_FILTER_EXAMPLES_DIR ${GR_PKG_DATA_DIR}/examples/filter)
 if(ENABLE_GR_FILTER)
 
 ########################################################################
-# Setup CPack components
-########################################################################
-include(GrPackage)
-CPACK_SET(CPACK_COMPONENT_GROUP_FILTER_DESCRIPTION "GNU Radio Filter Blocks")
-
-CPACK_COMPONENT("filter_runtime"
-    GROUP        "Filter"
-    DISPLAY_NAME "Runtime"
-    DESCRIPTION  "Runtime"
-    DEPENDS      "runtime_runtime"
-)
-
-CPACK_COMPONENT("filter_devel"
-    GROUP        "Filter"
-    DISPLAY_NAME "Development"
-    DESCRIPTION  "C++ headers, package config, import libraries"
-    DEPENDS      "runtime_devel"
-)
-
-CPACK_COMPONENT("filter_python"
-    GROUP        "Filter"
-    DISPLAY_NAME "Python"
-    DESCRIPTION  "Python modules for runtime; GRC xml files"
-    DEPENDS      "runtime_python;filter_runtime"
-)
-
-CPACK_COMPONENT("filter_swig"
-    GROUP        "Filter"
-    DISPLAY_NAME "SWIG"
-    DESCRIPTION  "SWIG development .i files"
-    DEPENDS      "runtime_swig;filter_python;filter_devel"
-)
-
-########################################################################
 # Add subdirectories
 ########################################################################
 add_subdirectory(include/gnuradio/filter)
@@ -94,9 +60,11 @@ if(ENABLE_PYTHON)
     add_subdirectory(python/filter)
     add_subdirectory(python/filter/design)
     add_subdirectory(python/filter/gui)
-    add_subdirectory(grc)
     add_subdirectory(apps)
 endif(ENABLE_PYTHON)
+if(ENABLE_GRC)
+    add_subdirectory(grc)
+endif(ENABLE_GRC)
 add_subdirectory(examples)
 add_subdirectory(docs)
 
@@ -111,7 +79,6 @@ configure_file(
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-filter.pc
     DESTINATION ${GR_LIBRARY_DIR}/pkgconfig
-    COMPONENT "filter_devel"
 )
 
 endif(ENABLE_GR_FILTER)

@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2015 Free Software Foundation, Inc.
+ * Copyright 2015-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -132,11 +132,6 @@ usrp_block_impl::usrp_block_impl(
     _curr_tune_req(stream_args.channels.size(), ::uhd::tune_request_t()),
     _chans_to_tune(stream_args.channels.size())
 {
-  // TODO remove this when we update UHD
-  if(stream_args.cpu_format == "fc32")
-    _type = boost::make_shared< ::uhd::io_type_t >(::uhd::io_type_t::COMPLEX_FLOAT32);
-  if(stream_args.cpu_format == "sc16")
-    _type = boost::make_shared< ::uhd::io_type_t >(::uhd::io_type_t::COMPLEX_INT16);
   _dev = ::uhd::usrp::multi_usrp::make(device_addr);
 
   _check_mboard_sensors_locked();
@@ -207,7 +202,7 @@ bool usrp_block_impl::_wait_for_locked_sensor(
     else {
       first_lock_time = boost::system_time(); //reset to 'not a date time'
 
-      if (boost::get_system_time() > (start + boost::posix_time::seconds(static_cast<long>(LOCK_TIMEOUT)))){
+      if (boost::get_system_time() > (start + boost::posix_time::seconds(static_cast<long>(LOCK_TIMEOUT)))) {
         return false;
       }
     }
@@ -313,62 +308,38 @@ void
 usrp_block_impl::set_time_source(const std::string &source,
                                 const size_t mboard)
 {
-#ifdef UHD_USRP_MULTI_USRP_REF_SOURCES_API
   return _dev->set_time_source(source, mboard);
-#else
-  throw std::runtime_error("not implemented in this version");
-#endif
 }
 
 std::string
 usrp_block_impl::get_time_source(const size_t mboard)
 {
-#ifdef UHD_USRP_MULTI_USRP_REF_SOURCES_API
   return _dev->get_time_source(mboard);
-#else
-  throw std::runtime_error("not implemented in this version");
-#endif
 }
 
 std::vector<std::string>
 usrp_block_impl::get_time_sources(const size_t mboard)
 {
-#ifdef UHD_USRP_MULTI_USRP_REF_SOURCES_API
   return _dev->get_time_sources(mboard);
-#else
-  throw std::runtime_error("not implemented in this version");
-#endif
 }
 
 void
 usrp_block_impl::set_clock_source(const std::string &source,
                                  const size_t mboard)
 {
-#ifdef UHD_USRP_MULTI_USRP_REF_SOURCES_API
   return _dev->set_clock_source(source, mboard);
-#else
-  throw std::runtime_error("not implemented in this version");
-#endif
 }
 
 std::string
 usrp_block_impl::get_clock_source(const size_t mboard)
 {
-#ifdef UHD_USRP_MULTI_USRP_REF_SOURCES_API
   return _dev->get_clock_source(mboard);
-#else
-  throw std::runtime_error("not implemented in this version");
-#endif
 }
 
 std::vector<std::string>
 usrp_block_impl::get_clock_sources(const size_t mboard)
 {
-#ifdef UHD_USRP_MULTI_USRP_REF_SOURCES_API
   return _dev->get_clock_sources(mboard);
-#else
-  throw std::runtime_error("not implemented in this version");
-#endif
 }
 
 double
@@ -441,21 +412,13 @@ void
 usrp_block_impl::set_command_time(const ::uhd::time_spec_t &time_spec,
                                  size_t mboard)
 {
-#ifdef UHD_USRP_MULTI_USRP_COMMAND_TIME_API
   return _dev->set_command_time(time_spec, mboard);
-#else
-  throw std::runtime_error("not implemented in this version");
-#endif
 }
 
 void
 usrp_block_impl::clear_command_time(size_t mboard)
 {
-#ifdef UHD_USRP_MULTI_USRP_COMMAND_TIME_API
   return _dev->clear_command_time(mboard);
-#else
-  throw std::runtime_error("not implemented in this version");
-#endif
 }
 
 void
@@ -463,11 +426,7 @@ usrp_block_impl::set_user_register(const uint8_t addr,
                                     const uint32_t data,
                                     size_t mboard)
 {
-#ifdef UHD_USRP_MULTI_USRP_USER_REGS_API
   _dev->set_user_register(addr, data, mboard);
-#else
-  throw std::runtime_error("not implemented in this version");
-#endif
 }
 
 void

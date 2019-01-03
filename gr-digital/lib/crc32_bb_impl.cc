@@ -72,7 +72,7 @@ namespace gr {
         if (n_packed_length > d_buffer.size()){
           d_buffer.resize(n_packed_length);
           }
-        d_buffer.clear();
+        std::fill(d_buffer.begin(), d_buffer.begin() + n_packed_length, 0);
         for (size_t bit = 0; bit < packet_length; bit++){
           d_buffer[bit/8] |= (in[bit] << (bit % 8));
         }
@@ -108,7 +108,7 @@ namespace gr {
           }
         }
         else{
-          for(int i=0; i < d_crc_length; i++){
+          for(unsigned int i=0; i < d_crc_length; i++){
             if(((crc >> i) & 0x1) != *(in + packet_length - d_crc_length + i)) { // Drop package
               return 0;
             }
@@ -122,7 +122,7 @@ namespace gr {
           memcpy((void *) (out + packet_length), &crc, d_crc_length); // FIXME big-endian/little-endian, this might be wrong
         }
         else {
-          for (int i = 0; i < d_crc_length; i++) { // unpack CRC and store in buffer
+          for (unsigned int i = 0; i < d_crc_length; i++) { // unpack CRC and store in buffer
             d_buffer[i] = (crc >> i) & 0x1;
           }
           memcpy((void *) (out + packet_length), (void *) &d_buffer[0], d_crc_length);

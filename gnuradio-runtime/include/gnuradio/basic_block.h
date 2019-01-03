@@ -153,6 +153,7 @@ namespace gr {
      * and never changes during the life of the block.
      */
     std::string symbol_name() const { return d_symbol_name; }
+    std::string identifier() const { return this->name() + "(" + std::to_string(this->unique_id()) + ")"; }
 
     gr::io_signature::sptr input_signature() const  { return d_input_signature; }
     gr::io_signature::sptr output_signature() const { return d_output_signature; }
@@ -161,17 +162,17 @@ namespace gr {
     /*!
      * True if the block has an alias (see set_block_alias).
      */
-    bool alias_set() { return !d_symbol_alias.empty(); }
+    bool alias_set() const { return !d_symbol_alias.empty(); }
 
     /*!
      * Returns the block's alias as a string.
      */
-    std::string alias(){ return alias_set()?d_symbol_alias:symbol_name(); }
+    std::string alias() const { return alias_set()?d_symbol_alias:symbol_name(); }
 
     /*!
      * Returns the block's alias as PMT.
      */
-    pmt::pmt_t alias_pmt(){ return pmt::intern(alias()); }
+    pmt::pmt_t alias_pmt() const { return pmt::intern(alias()); }
 
     /*!
      * Set's a new alias for the block; also adds an entry into the
@@ -251,13 +252,6 @@ namespace gr {
      * \returns returns pmt at head of queue or pmt::pmt_t() if empty.
      */
     pmt::pmt_t delete_head_nowait( pmt::pmt_t which_port);
-
-    /*!
-     * \param[in] which_port The message port from which to get the message.
-     * \param[in] millisec Optional timeout value (0=no timeout).
-     * \returns returns pmt at head of queue or pmt::pmt_t() if empty.
-     */
-    pmt::pmt_t delete_head_blocking(pmt::pmt_t which_port, unsigned int millisec = 0);
 
     msg_queue_t::iterator get_iterator(pmt::pmt_t which_port) {
       return msg_queue[which_port].begin();
@@ -376,15 +370,15 @@ namespace gr {
       d_msg_handlers[which_port] = msg_handler_t(msg_handler);
     }
 
-    virtual void set_processor_affinity(const std::vector<int> &mask)
-    { (void) mask;
-      throw std::runtime_error("set_processor_affinity not overloaded in child class."); }
+    virtual void set_processor_affinity(const std::vector<int> &mask) = 0;
 
-    virtual void unset_processor_affinity()
-    { throw std::runtime_error("unset_processor_affinity not overloaded in child class."); }
+    virtual void unset_processor_affinity() = 0;
 
-    virtual std::vector<int> processor_affinity()
-    { throw std::runtime_error("processor_affinity not overloaded in child class."); }
+    virtual std::vector<int> processor_affinity() = 0;
+
+    virtual void set_log_level(std::string level) = 0;
+
+    virtual std::string log_level() = 0;
   };
 
   inline bool operator<(basic_block_sptr lhs, basic_block_sptr rhs)
@@ -399,7 +393,7 @@ namespace gr {
 
   inline std::ostream &operator << (std::ostream &os, basic_block_sptr basic_block)
   {
-    os << basic_block->name() << "(" << basic_block->unique_id() << ")";
+    os << basic_block->identifier();
     return os;
   }
 

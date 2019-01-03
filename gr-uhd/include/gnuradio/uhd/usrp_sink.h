@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2010-2015 Free Software Foundation, Inc.
+ * Copyright 2010-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -24,28 +24,6 @@
 #define INCLUDED_GR_UHD_USRP_SINK_H
 
 #include <gnuradio/uhd/usrp_block.h>
-
-// TODO In 3.8, UHD 3.4 will be required and we can remove all these ifdefs
-#ifndef INCLUDED_UHD_STREAM_HPP
-namespace uhd {
-  struct GR_UHD_API stream_args_t
-  {
-    stream_args_t(const std::string &cpu = "",
-                  const std::string &otw = "")
-      {
-        cpu_format = cpu;
-        otw_format = otw;
-      }
-    std::string cpu_format;
-    std::string otw_format;
-    device_addr_t args;
-    std::vector<size_t> channels;
-  };
-}
-#  define INCLUDED_UHD_STREAM_HPP
-#else
-#  define GR_UHD_USE_STREAM_API
-#endif
 
 namespace gr {
   namespace uhd {
@@ -124,17 +102,6 @@ namespace gr {
       typedef boost::shared_ptr<usrp_sink> sptr;
 
       /*!
-       * \brief DEPRECATED Make a new USRP sink block using the deprecated io_type_t.
-       * \ingroup uhd_blk
-       *
-       * This function will be removed in the future. Please use the other make function,
-       * gr::uhd::usrp_sink::make(const ::uhd::device_addr_t, const ::uhd::stream_args_t, const std::string).
-       */
-      static sptr make(const ::uhd::device_addr_t &device_addr,
-                       const ::uhd::io_type_t &io_type,
-                       size_t num_channels);
-
-      /*!
        * \param device_addr the address to identify the hardware
        * \param stream_args the IO format and channel specification
        * \param tsb_tag_name the name of the tag identifying tagged stream length
@@ -165,6 +132,82 @@ namespace gr {
        * \return TX info
        */
       virtual ::uhd::dict<std::string, std::string> get_usrp_info(size_t chan = 0) = 0;
+
+      /*!
+       * Get a list of possible LO stage names
+       * \param chan the channel index 0 to N-1
+       * \return a vector of strings for possible LO names
+       */
+      virtual std::vector<std::string> get_lo_names(size_t chan = 0) = 0;
+
+      /*!
+       * Set the LO source for the usrp device.
+       * For usrps that support selectable LOs, this function
+       * allows switching between them.
+       * Typical options for source: internal, external.
+       * \param src a string representing the LO source
+       * \param name the name of the LO stage to update
+       * \param chan the channel index 0 to N-1
+       */
+      virtual void set_lo_source(const std::string &src, const std::string &name, size_t chan = 0) = 0;
+
+      /*!
+       * Get the currently set LO source.
+       * \param name the name of the LO stage to query
+       * \param chan the channel index 0 to N-1
+       * \return the configured LO source
+       */
+      virtual const std::string get_lo_source(const std::string &name, size_t chan = 0) = 0;
+
+      /*!
+       * Get a list of possible LO sources.
+       * \param name the name of the LO stage to query
+       * \param chan the channel index 0 to N-1
+       * \return a vector of strings for possible settings
+       */
+      virtual std::vector<std::string> get_lo_sources(const std::string &name, size_t chan = 0) = 0;
+
+      /*!
+       * Set whether the LO used by the usrp device is exported
+       * For usrps that support exportable LOs, this function
+       * configures if the LO used by chan is exported or not.
+       * \param enabled if true then export the LO
+       * \param name the name of the LO stage to update
+       * \param chan the channel index 0 to N-1 for the source channel
+       */
+      virtual void set_lo_export_enabled(bool enabled, const std::string &name, size_t chan = 0) = 0;
+
+      /*!
+       * Returns true if the currently selected LO is being exported.
+       * \param name the name of the LO stage to query
+       * \param chan the channel index 0 to N-1
+       */
+      virtual bool get_lo_export_enabled(const std::string &name, size_t chan = 0) = 0;
+
+      /*!
+       * Set the RX LO frequency (Advanced).
+       * \param freq the frequency to set the LO to
+       * \param name the name of the LO stage to update
+       * \param chan the channel index 0 to N-1
+       * \return a coerced LO frequency
+       */
+      virtual double set_lo_freq(double freq, const std::string &name, size_t chan = 0) = 0;
+
+      /*!
+       * Get the current RX LO frequency (Advanced).
+       * \param name the name of the LO stage to query
+       * \param chan the channel index 0 to N-1
+       * \return the configured LO frequency
+       */
+      virtual double get_lo_freq(const std::string &name, size_t chan = 0) = 0;
+
+      /*!
+       * Get the LO frequency range of the RX LO.
+       * \param name the name of the LO stage to query
+       * \param chan the channel index 0 to N-1
+       * \return a frequency range object
+       */
+      virtual ::uhd::freq_range_t get_lo_freq_range(const std::string &name, size_t chan = 0) = 0;
 
       /*!
        * Set a constant DC offset value.

@@ -33,8 +33,6 @@
 namespace gr {
   namespace trellis {
 
-    static const float INF = 1.0e9;
-
     siso_f::sptr
     siso_f::make(const fsm &FSM, int K,
 		 int S0, int SK,
@@ -61,15 +59,15 @@ namespace gr {
       set_output_multiple (d_K*multiple);
 
       //what is the meaning of relative rate for a block with 2 inputs?
-      //set_relative_rate ( multiple / ((double) d_FSM.I()) );
+      //set_relative_rate ( (uint64_t) multiple, (uint64_t) d_FSM.I() );
       // it turns out that the above gives problems in the scheduler, so
       // let's try (assumption O>I)
-      //set_relative_rate ( multiple / ((double) d_FSM.O()) );
+      //set_relative_rate ( (uint64_t) multiple, (uint64_t) d_FSM.O() );
       // I am tempted to automate like this
       if(d_FSM.I() <= d_FSM.O())
-	set_relative_rate(multiple / ((double) d_FSM.O()));
+	set_relative_rate((uint64_t)multiple, (uint64_t)d_FSM.O());
       else
-	set_relative_rate(multiple / ((double) d_FSM.I()));
+	set_relative_rate((uint64_t)multiple, (uint64_t)d_FSM.I());
     }
 
     siso_f_impl::siso_f_impl(const fsm &FSM, int K,
@@ -104,35 +102,35 @@ namespace gr {
     }
 
     void siso_f_impl::set_POSTI(bool POSTI)
-    { 
+    {
       gr::thread::scoped_lock guard(d_setlock);
-      d_POSTI = POSTI; 
+      d_POSTI = POSTI;
       recalculate();
     }
 
     void siso_f_impl::set_POSTO(bool POSTO)
-    { 
+    {
       gr::thread::scoped_lock guard(d_setlock);
-      d_POSTO = POSTO; 
+      d_POSTO = POSTO;
       recalculate();
     }
 
     void siso_f_impl::set_S0(int S0)
-    { 
+    {
       gr::thread::scoped_lock guard(d_setlock);
-      d_S0 = S0; 
+      d_S0 = S0;
     }
 
     void siso_f_impl::set_SK(int SK)
-    { 
+    {
       gr::thread::scoped_lock guard(d_setlock);
-      d_SK = SK; 
+      d_SK = SK;
     }
 
-    void siso_f_impl::set_SISO_TYPE(trellis::siso_type_t type) 
-    { 
+    void siso_f_impl::set_SISO_TYPE(trellis::siso_type_t type)
+    {
       gr::thread::scoped_lock guard(d_setlock);
-      d_SISO_TYPE = type; 
+      d_SISO_TYPE = type;
     }
 
     siso_f_impl::~siso_f_impl()

@@ -20,6 +20,8 @@
 # Boston, MA 02110-1301, USA.
 #
 
+from __future__ import division
+
 import random
 import cmath
 import time
@@ -29,6 +31,7 @@ from gnuradio import gr, gr_unittest, filter, digital, blocks
 class test_pfb_clock_sync(gr_unittest.TestCase):
 
     def setUp(self):
+        random.seed(0)
         self.tb = gr.top_block()
 
     def tearDown(self):
@@ -39,9 +42,9 @@ class test_pfb_clock_sync(gr_unittest.TestCase):
         excess_bw = 0.35
 
         sps = 4
-        loop_bw = cmath.pi/100.0
+        loop_bw = cmath.pi / 100.0
         nfilts = 32
-        init_phase = nfilts/2
+        init_phase = nfilts / 2
         max_rate_deviation = 0.5
         osps = 1
 
@@ -92,9 +95,9 @@ class test_pfb_clock_sync(gr_unittest.TestCase):
         excess_bw = 0.35
 
         sps = 4
-        loop_bw = cmath.pi/100.0
+        loop_bw = cmath.pi / 100.0
         nfilts = 32
-        init_phase = nfilts/2
+        init_phase = nfilts / 2
         max_rate_deviation = 0.5
         osps = 1
 
@@ -146,9 +149,9 @@ class test_pfb_clock_sync(gr_unittest.TestCase):
         excess_bw1 = 0.22
 
         sps = 4
-        loop_bw = cmath.pi/100.0
+        loop_bw = cmath.pi / 100.0
         nfilts = 32
-        init_phase = nfilts/2
+        init_phase = nfilts / 2
         max_rate_deviation = 0.5
         osps = 1
 
@@ -184,9 +187,9 @@ class test_pfb_clock_sync(gr_unittest.TestCase):
         excess_bw1 = 0.22
 
         sps = 4
-        loop_bw = cmath.pi/100.0
+        loop_bw = cmath.pi / 100.0
         nfilts = 32
-        init_phase = nfilts/2
+        init_phase = nfilts / 2
         max_rate_deviation = 0.5
         osps = 1
 

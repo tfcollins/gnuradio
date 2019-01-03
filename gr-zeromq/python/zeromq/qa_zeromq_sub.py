@@ -35,7 +35,8 @@ class qa_zeromq_sub (gr_unittest.TestCase):
         self.tb = gr.top_block ()
         self.zmq_context = zmq.Context()
         self.pub_socket = self.zmq_context.socket(zmq.PUB)
-        self.pub_socket.bind("tcp://127.0.0.1:5559")
+        self.pub_socket.bind("tcp://127.0.0.1:0")
+        self._address = self.pub_socket.getsockopt(zmq.LAST_ENDPOINT).decode()
 
     def tearDown (self):
         self.pub_socket.close()
@@ -44,15 +45,15 @@ class qa_zeromq_sub (gr_unittest.TestCase):
 
     def test_001 (self):
         vlen = 10
-        src_data = numpy.array(range(vlen)*100, 'float32')
-        zeromq_sub_source = zeromq.sub_source(gr.sizeof_float, vlen, "tcp://127.0.0.1:5559")
+        src_data = numpy.array(list(range(vlen))*100, 'float32')
+        zeromq_sub_source = zeromq.sub_source(gr.sizeof_float, vlen, self._address)
         sink = blocks.vector_sink_f(vlen)
         self.tb.connect(zeromq_sub_source, sink)
 
         self.tb.start()
         time.sleep(0.05)
         self.pub_socket.send(src_data.tostring())
-        time.sleep(0.25)
+        time.sleep(0.5)
         self.tb.stop()
         self.tb.wait()
         self.assertFloatTuplesAlmostEqual(sink.data(), src_data)
@@ -61,16 +62,16 @@ class qa_zeromq_sub (gr_unittest.TestCase):
         vlen = 10
 
         # Construct multipart source data to publish
-        raw_data = [numpy.array(range(vlen)*100, 'float32'), numpy.array(range(vlen, 2*vlen)*100, 'float32')]
+        raw_data = [numpy.array(range(vlen), 'float32')*100, numpy.array(range(vlen, 2*vlen), 'float32')*100]
         src_data = [a.tostring() for a in raw_data]
-        zeromq_sub_source = zeromq.sub_source(gr.sizeof_float, vlen, "tcp://127.0.0.1:5559")
+        zeromq_sub_source = zeromq.sub_source(gr.sizeof_float, vlen, self._address)
         sink = blocks.vector_sink_f(vlen)
         self.tb.connect(zeromq_sub_source, sink)
 
         self.tb.start()
         time.sleep(0.05)
         self.pub_socket.send_multipart(src_data)
-        time.sleep(0.25)
+        time.sleep(0.5)
         self.tb.stop()
         self.tb.wait()
 

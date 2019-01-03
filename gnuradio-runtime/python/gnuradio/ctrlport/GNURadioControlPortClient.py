@@ -27,8 +27,17 @@ Remote Procedure Call (RPC) transports, the Apache Thrift middle-ware RPC
 is currently the only supported transport.
 
 """
+from __future__ import print_function
+from __future__ import unicode_literals
 
-import exceptions
+from gnuradio.ctrlport.RPCConnection import RPCMethods
+try:
+    from gnuradio.ctrlport.RPCConnectionThrift import RPCConnectionThrift
+    from thrift.transport.TTransport import TTransportException
+except ImportError:
+    # Thrift support not provided we should remove it from RPCMethods
+    pass
+
 
 """
 GNURadioControlPortClient is the main class for creating a GNU Radio
@@ -38,7 +47,7 @@ Two constructors are provided for creating a connection to ControlPort.
 
 """
 
-class GNURadioControlPortClient():
+class GNURadioControlPortClient(object):
     """
     Constructor for creating a ControlPort connection to a specified host / port
 
@@ -112,9 +121,7 @@ class GNURadioControlPortClient():
 
         self.client = None
 
-        from gnuradio.ctrlport.RPCConnection import RPCMethods
-        if RPCMethods.has_key(rpcmethod):
-            from gnuradio.ctrlport.RPCConnectionThrift import RPCConnectionThrift
+        if rpcmethod in RPCMethods:
             if rpcmethod == 'thrift':
                 #print("making RPCConnectionThrift")
                 self.client = RPCConnectionThrift(host, port)
@@ -128,5 +135,5 @@ class GNURadioControlPortClient():
                 if not blockingcallback is None:
                     blockingcallback()
         else:
-            print("Unsupported RPC method: ", rpcmethod)
-            raise exceptions.ValueError()
+            print(("Unsupported RPC method: ", rpcmethod))
+            raise ValueError()

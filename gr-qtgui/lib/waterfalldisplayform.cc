@@ -20,10 +20,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <cmath>
+#include <gnuradio/qtgui/waterfalldisplayform.h>
+
 #include <QColorDialog>
 #include <QMessageBox>
-#include <gnuradio/qtgui/waterfalldisplayform.h>
+
+#include <cmath>
 #include <iostream>
 
 WaterfallDisplayForm::WaterfallDisplayForm(int nplots, QWidget* parent)
@@ -64,13 +66,13 @@ WaterfallDisplayForm::WaterfallDisplayForm(int nplots, QWidget* parent)
   // Now create our own menus
   for(int i = 0; i < nplots; i++) {
     ColorMapMenu *colormap = new ColorMapMenu(i, this);
-    connect(colormap, SIGNAL(whichTrigger(int, const int, const QColor&, const QColor&)),
-	    this, SLOT(setColorMap(int, const int, const QColor&, const QColor&)));
+    connect(colormap, SIGNAL(whichTrigger(unsigned int, const int, const QColor&, const QColor&)),
+	    this, SLOT(setColorMap(unsigned int, const int, const QColor&, const QColor&)));
     d_lines_menu[i]->addMenu(colormap);
 
     d_marker_alpha_menu.push_back(new MarkerAlphaMenu(i, this));
-    connect(d_marker_alpha_menu[i], SIGNAL(whichTrigger(int, int)),
-	    this, SLOT(setAlpha(int, int)));
+    connect(d_marker_alpha_menu[i], SIGNAL(whichTrigger(unsigned int, unsigned int)),
+	    this, SLOT(setAlpha(unsigned int, unsigned int)));
     d_lines_menu[i]->addMenu(d_marker_alpha_menu[i]);
   }
 
@@ -172,25 +174,25 @@ WaterfallDisplayForm::getFFTWindowType() const
 }
 
 int
-WaterfallDisplayForm::getColorMap(int which)
+WaterfallDisplayForm::getColorMap(unsigned int which)
 {
   return getPlot()->getIntensityColorMapType(which);
 }
 
 int
-WaterfallDisplayForm::getAlpha(int which)
+WaterfallDisplayForm::getAlpha(unsigned int which)
 {
   return getPlot()->getAlpha(which);
 }
 
 double
-WaterfallDisplayForm::getMinIntensity(int which)
+WaterfallDisplayForm::getMinIntensity(unsigned int which)
 {
   return getPlot()->getMinIntensity(which);
 }
 
 double
-WaterfallDisplayForm::getMaxIntensity(int which)
+WaterfallDisplayForm::getMaxIntensity(unsigned int which)
 {
   return getPlot()->getMaxIntensity(which);
 }
@@ -244,7 +246,7 @@ WaterfallDisplayForm::setFrequencyRange(const double centerfreq,
 }
 
 void
-WaterfallDisplayForm::setColorMap(int which,
+WaterfallDisplayForm::setColorMap(unsigned int which,
 				  const int newType,
 				  const QColor lowColor,
 				  const QColor highColor)
@@ -255,7 +257,7 @@ WaterfallDisplayForm::setColorMap(int which,
 }
 
 void
-WaterfallDisplayForm::setAlpha(int which, int alpha)
+WaterfallDisplayForm::setAlpha(unsigned int which, unsigned int alpha)
 {
   getPlot()->setAlpha(which, alpha);
   getPlot()->replot();
@@ -362,4 +364,3 @@ WaterfallDisplayForm::setUpdateTime(double t)
    // This is the case when plotting using gr_spectrogram_plot
    d_time_per_fft = t;
 }
-

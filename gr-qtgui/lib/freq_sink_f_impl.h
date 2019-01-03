@@ -24,6 +24,7 @@
 #define INCLUDED_QTGUI_FREQ_SINK_F_IMPL_H
 
 #include <gnuradio/qtgui/freq_sink_f.h>
+
 #include <gnuradio/filter/firdes.h>
 #include <gnuradio/fft/fft.h>
 #include <gnuradio/high_res_timer.h>
@@ -48,6 +49,7 @@ namespace gr {
       int d_nconnections;
 
       const pmt::pmt_t d_port;
+      const pmt::pmt_t d_port_bw;
 
       bool d_shift;
       fft::fft_complex *d_fft;
@@ -72,6 +74,10 @@ namespace gr {
       bool fftresize();
       void check_clicked();
       void fft(float *data_out, const float *data_in, int size);
+
+      // Handles message input port for setting new bandwidth
+      // The message is a PMT pair (intern('bw'), double(bw))
+      void handle_set_bw(pmt::pmt_t msg);
 
       // Handles message input port for setting new center frequency.
       // The message is a PMT pair (intern('freq'), double(frequency)).
@@ -125,24 +131,24 @@ namespace gr {
       void set_update_time(double t);
       void set_title(const std::string &title);
       void set_y_label(const std::string &label, const std::string &unit);
-      void set_line_label(int which, const std::string &label);
-      void set_line_color(int which, const std::string &color);
-      void set_line_width(int which, int width);
-      void set_line_style(int which, int style);
-      void set_line_marker(int which, int marker);
-      void set_line_alpha(int which, double alpha);
+      void set_line_label(unsigned int which, const std::string &label);
+      void set_line_color(unsigned int which, const std::string &color);
+      void set_line_width(unsigned int which, int width);
+      void set_line_style(unsigned int which, int style);
+      void set_line_marker(unsigned int which, int marker);
+      void set_line_alpha(unsigned int which, double alpha);
       void set_plot_pos_half(bool half);
       void set_trigger_mode(trigger_mode mode,
                             float level, int channel,
                             const std::string &tag_key="");
 
       std::string title();
-      std::string line_label(int which);
-      std::string line_color(int which);
-      int line_width(int which);
-      int line_style(int which);
-      int line_marker(int which);
-      double line_alpha(int which);
+      std::string line_label(unsigned int which);
+      std::string line_color(unsigned int which);
+      int line_width(unsigned int which);
+      int line_style(unsigned int which);
+      int line_marker(unsigned int which);
+      double line_alpha(unsigned int which);
 
       void set_size(int width, int height);
 

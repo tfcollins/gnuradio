@@ -21,6 +21,7 @@
 # Boston, MA 02110-1301, USA.
 #
 
+
 from gnuradio import gr, gr_unittest
 from gnuradio import blocks, zeromq
 import time
@@ -37,17 +38,18 @@ class qa_zeromq_pubsub (gr_unittest.TestCase):
 
     def test_001 (self):
         vlen = 10
-        src_data = range(vlen)*100
+        src_data = list(range(vlen))*100
         src = blocks.vector_source_f(src_data, False, vlen)
-        zeromq_pub_sink = zeromq.pub_sink(gr.sizeof_float, vlen, "tcp://127.0.0.1:5556", 0)
-        zeromq_sub_source = zeromq.sub_source(gr.sizeof_float, vlen, "tcp://127.0.0.1:5556", 0)
+        zeromq_pub_sink = zeromq.pub_sink(gr.sizeof_float, vlen, "tcp://127.0.0.1:0", 0)
+        address = zeromq_pub_sink.last_endpoint()
+        zeromq_sub_source = zeromq.sub_source(gr.sizeof_float, vlen, address, 0)
         sink = blocks.vector_sink_f(vlen)
         self.send_tb.connect(src, zeromq_pub_sink)
         self.recv_tb.connect(zeromq_sub_source, sink)
         self.recv_tb.start()
-        time.sleep(0.25)
+        time.sleep(0.5)
         self.send_tb.start()
-        time.sleep(0.25)
+        time.sleep(0.5)
         self.recv_tb.stop()
         self.send_tb.stop()
         self.recv_tb.wait()

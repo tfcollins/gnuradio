@@ -20,10 +20,14 @@
 # Boston, MA 02110-1301, USA.
 #
 
+from __future__ import print_function
+from __future__ import division
+from __future__ import unicode_literals
 from gnuradio import gr
 from gnuradio import blocks
 from gnuradio import filter
 import sys
+import numpy
 
 try:
     from gnuradio import analog
@@ -32,13 +36,7 @@ except ImportError:
     sys.exit(1)
 
 try:
-    import scipy
-except ImportError:
-    sys.stderr.write("Error: Program requires scipy (see: www.scipy.org).\n")
-    sys.exit(1)
-
-try:
-    import pylab
+    from matplotlib import pyplot
 except ImportError:
     sys.stderr.write("Error: Program requires matplotlib (see: matplotlib.sourceforge.net).\n")
     sys.exit(1)
@@ -59,11 +57,11 @@ def main():
         fmtx.append(fm)
 
     syntaps = filter.firdes.low_pass_2(len(freqs), fs, fs/float(nchans)/2, 100, 100)
-    print "Synthesis Num. Taps = %d (taps per filter = %d)" % (len(syntaps),
-                                                               len(syntaps)/nchans)
+    print("Synthesis Num. Taps = %d (taps per filter = %d)" % (len(syntaps),
+                                                               len(syntaps) / nchans))
     chtaps = filter.firdes.low_pass_2(len(freqs), fs, fs/float(nchans)/2, 100, 100)
-    print "Channelizer Num. Taps = %d (taps per filter = %d)" % (len(chtaps),
-                                                                 len(chtaps)/nchans)
+    print("Channelizer Num. Taps = %d (taps per filter = %d)" % (len(chtaps),
+                                                                 len(chtaps) / nchans))
     filtbank = filter.pfb_synthesizer_ccf(nchans, syntaps)
     channelizer = filter.pfb.channelizer_ccf(nchans, chtaps)
 
@@ -84,7 +82,7 @@ def main():
     for i,si in enumerate(sigs):
         tb.connect(si, fmtx[i], (filtbank, i))
 
-    for i in xrange(nchans):
+    for i in range(nchans):
         snk.append(blocks.vector_sink_c())
         tb.connect((channelizer, i), snk[i])
 
@@ -94,32 +92,32 @@ def main():
         channel = 1
         data = snk[channel].data()[1000:]
 
-        f1 = pylab.figure(1)
+        f1 = pyplot.figure(1)
         s1 = f1.add_subplot(1,1,1)
         s1.plot(data[10000:10200] )
         s1.set_title(("Output Signal from Channel %d" % channel))
 
         fftlen = 2048
-        winfunc = scipy.blackman
-        #winfunc = scipy.hamming
+        winfunc = numpy.blackman
+        #winfunc = numpy.hamming
 
-        f2 = pylab.figure(2)
+        f2 = pyplot.figure(2)
         s2 = f2.add_subplot(1,1,1)
         s2.psd(data, NFFT=fftlen,
                Fs = nchans*fs,
-               noverlap=fftlen/4,
+               noverlap=fftlen / 4,
                window = lambda d: d*winfunc(fftlen))
         s2.set_title(("Output PSD from Channel %d" % channel))
 
-        f3 = pylab.figure(3)
+        f3 = pyplot.figure(3)
         s3 = f3.add_subplot(1,1,1)
         s3.psd(snk_synth.data()[1000:], NFFT=fftlen,
                Fs = nchans*fs,
-               noverlap=fftlen/4,
+               noverlap=fftlen / 4,
                window = lambda d: d*winfunc(fftlen))
         s3.set_title("Output of Synthesis Filter")
 
-        pylab.show()
+        pyplot.show()
 
 if __name__ == "__main__":
     main()

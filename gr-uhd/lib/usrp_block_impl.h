@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2015 Free Software Foundation, Inc.
+ * Copyright 2015-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -33,8 +33,6 @@
 namespace gr {
   namespace uhd {
 
-      static const size_t ALL_MBOARDS = ::uhd::usrp::multi_usrp::ALL_MBOARDS;
-      static const size_t ALL_CHANS = ::uhd::usrp::multi_usrp::ALL_CHANS;
       static const std::string ALL_GAINS = ::uhd::usrp::multi_usrp::ALL_GAINS;
 
 #ifdef UHD_USRP_MULTI_USRP_LO_CONFIG_API
@@ -218,7 +216,6 @@ namespace gr {
       //! Shared pointer to the underlying multi_usrp object
       ::uhd::usrp::multi_usrp::sptr _dev;
       ::uhd::stream_args_t _stream_args;
-      boost::shared_ptr< ::uhd::io_type_t > _type;
       //! Number of channels (i.e. number of in- or outputs)
       size_t _nchan;
       bool _stream_now;

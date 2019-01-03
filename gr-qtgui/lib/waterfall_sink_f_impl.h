@@ -24,6 +24,7 @@
 #define INCLUDED_QTGUI_WATERFALL_SINK_F_IMPL_H
 
 #include <gnuradio/qtgui/waterfall_sink_f.h>
+
 #include <gnuradio/filter/firdes.h>
 #include <gnuradio/fft/fft.h>
 #include <gnuradio/high_res_timer.h>
@@ -50,6 +51,7 @@ namespace gr {
       int d_nrows;
 
       const pmt::pmt_t d_port;
+      const pmt::pmt_t d_port_bw;      
 
       bool d_shift;
       fft::fft_complex *d_fft;
@@ -73,6 +75,10 @@ namespace gr {
       void fftresize();
       void check_clicked();
       void fft(float *data_out, const float *data_in, int size);
+
+      // Handles message input port for setting new bandwidth
+      // The message is a PMT pair (intern('bw'), double(bw))
+      void handle_set_bw(pmt::pmt_t msg);
 
       // Handles message input port for setting new center frequency.
       // The message is a PMT pair (intern('freq'), double(frequency)).
@@ -116,21 +122,21 @@ namespace gr {
       void set_time_per_fft(double t);
       void set_title(const std::string &title);
       void set_time_title(const std::string &title);
-      void set_line_label(int which, const std::string &label);
-      void set_line_alpha(int which, double alpha);
-      void set_color_map(int which, const int color);
+      void set_line_label(unsigned int which, const std::string &label);
+      void set_line_alpha(unsigned int which, double alpha);
+      void set_color_map(unsigned int which, const int color);
       void set_plot_pos_half(bool half);
 
       std::string title();
-      std::string line_label(int which);
-      double line_alpha(int which);
-      int color_map(int which);
+      std::string line_label(unsigned int which);
+      double line_alpha(unsigned int which);
+      int color_map(unsigned int which);
 
       void set_size(int width, int height);
 
       void auto_scale();
-      double min_intensity(int which);
-      double max_intensity(int which);
+      double min_intensity(unsigned int which);
+      double max_intensity(unsigned int which);
 
       void enable_menu(bool en);
       void enable_grid(bool en);

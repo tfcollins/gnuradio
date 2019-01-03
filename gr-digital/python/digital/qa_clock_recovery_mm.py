@@ -20,6 +20,7 @@
 # Boston, MA 02110-1301, USA.
 #
 
+
 import random
 import cmath
 
@@ -28,6 +29,7 @@ from gnuradio import gr, gr_unittest, digital, blocks
 class test_clock_recovery_mm(gr_unittest.TestCase):
 
     def setUp(self):
+        random.seed(0)
         self.tb = gr.top_block()
 
     def tearDown(self):

@@ -40,14 +40,15 @@ To manually stop the runner, call stop() on the object.
 
 To determine if the runner has exited, call exited() on the object.
 """
+from __future__ import unicode_literals
 
 from gnuradio import gr
-import gnuradio.gr.gr_threading as _threading
+import threading
 
-class msgq_runner(_threading.Thread):
+class msgq_runner(threading.Thread):
 
     def __init__(self, msgq, callback, exit_on_error=False):
-        _threading.Thread.__init__(self)
+        threading.Thread.__init__(self)
 
         self._msgq = msgq
         self._callback = callback
@@ -66,7 +67,7 @@ class msgq_runner(_threading.Thread):
             else:
                 try:
                     self._callback(msg)
-                except Exception, e:
+                except Exception as e:
                     if self._exit_on_error:
                         self._exit_error = e
                         self.stop()

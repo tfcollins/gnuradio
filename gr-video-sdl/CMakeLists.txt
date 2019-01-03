@@ -45,49 +45,17 @@ GR_SET_GLOBAL(GR_VIDEO_SDL_INCLUDE_DIRS
 if(ENABLE_GR_VIDEO_SDL)
 
 ########################################################################
-# Setup CPack components
-########################################################################
-include(GrPackage)
-CPACK_SET(CPACK_COMPONENT_GROUP_VIDEO_SDL_DESCRIPTION "GNU Radio Video SDL Blocks")
-
-CPACK_COMPONENT("video_sdl_runtime"
-    GROUP        "Video SDL"
-    DISPLAY_NAME "Runtime"
-    DESCRIPTION  "Runtime"
-    DEPENDS      "runtime_runtime"
-)
-
-CPACK_COMPONENT("video_sdl_devel"
-    GROUP        "Video SDL"
-    DISPLAY_NAME "Development"
-    DESCRIPTION  "C++ headers, package config, import libraries"
-    DEPENDS      "runtime_devel"
-)
-
-CPACK_COMPONENT("video_sdl_python"
-    GROUP        "Video SDL"
-    DISPLAY_NAME "Python"
-    DESCRIPTION  "Python modules for runtime; GRC xml files"
-    DEPENDS      "runtime_python;video_sdl_runtime"
-)
-
-CPACK_COMPONENT("video_sdl_swig"
-    GROUP        "Video SDL"
-    DISPLAY_NAME "SWIG"
-    DESCRIPTION  "SWIG development .i files"
-    DEPENDS      "runtime_swig;video_sdl_python;video_sdl_devel"
-)
-
-########################################################################
 # Add subdirectories
 ########################################################################
 add_subdirectory(include/gnuradio/video_sdl)
 add_subdirectory(lib)
 if(ENABLE_PYTHON)
-    add_subdirectory(grc)
     add_subdirectory(swig)
     add_subdirectory(python/video_sdl)
 endif(ENABLE_PYTHON)
+if(ENABLE_GRC)
+    add_subdirectory(grc)
+endif(ENABLE_GRC)
 
 ########################################################################
 # Create Pkg Config File
@@ -100,7 +68,6 @@ configure_file(
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-video-sdl.pc
     DESTINATION ${GR_LIBRARY_DIR}/pkgconfig
-    COMPONENT "video_sdl_devel"
 )
 
 endif(ENABLE_GR_VIDEO_SDL)

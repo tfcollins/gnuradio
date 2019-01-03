@@ -37,7 +37,6 @@ first. Most recent systems have these packages available.
 \li git                                        http://git-scm.com/downloads
 \li cmake       (>= @GR_CMAKE_MIN_VERSION@)    http://www.cmake.org/cmake/resources/software.html
 \li boost       (>= @GR_BOOST_MIN_VERSION@)    http://www.boost.org/users/download/
-\li cppunit     (>= @GR_CPPUNIT_MIN_VERSION@)  http://freedesktop.org/wiki/Software/cppunit/
 \li mako        (>= @GR_MAKO_MIN_VERSION@)     http://www.makotemplates.org/download.html
 \li log4cpp     (>= 1.0)                       http://log4cpp.sourceforge.net/
 
@@ -45,6 +44,7 @@ A C/C++ compiler is also required. These are known to work:
 
 \li gcc/g++     (>= @GCC_MIN_VERSION@)         https://gcc.gnu.org/install/download.html
 \li clang/clang++ (>= @CLANG_MIN_VERSION@)     http://releases.llvm.org/download.html
+\li Microsoft Visual Studio (>= @MSVC_MIN_VERSION@)
 
 Other compilers may work, but are not supported.
 
@@ -73,12 +73,10 @@ cppzmq is included (undocumentedly) in the debian and Ubuntu libzmq3-dev package
 \li gsl         (>= 1.10)    http://gnuwin32.sourceforge.net/packages/gsl.htm
 
 \subsection dep_gr_qtgui gr-qtgui: The QT-based Graphical User Interface
-\li qt4         (>= 4.4.0)   http://qt.nokia.com/downloads/
+\li qt5         (>= 5.0.0)   http://qt.nokia.com/downloads/
 \li qwt         (>= 5.2.0)   http://sourceforge.net/projects/qwt/
 \li pyqt        (>= 4.10.0)  http://www.riverbankcomputing.co.uk/software/pyqt/download
 
-\subsection dep_gr_wxgui gr-wxgui: The WX-based Graphical User Interface
-\li wxpython    (>= 2.8)     http://www.wxpython.org/
 \li python-lxml (>= 1.3.6)   http://lxml.de/
 
 \subsection dep_gr_audio gr-audio: Audio Subsystems (system/OS dependent)

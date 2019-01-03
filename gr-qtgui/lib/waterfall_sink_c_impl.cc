@@ -25,12 +25,15 @@
 #endif
 
 #include "waterfall_sink_c_impl.h"
+
 #include <gnuradio/io_signature.h>
 #include <gnuradio/prefs.h>
-#include <string.h>
+
 #include <volk/volk.h>
 #include <qwt_symbol.h>
+
 #include <iostream>
+#include <string.h>
 
 namespace gr {
   namespace qtgui {
@@ -65,6 +68,7 @@ namespace gr {
     d_nconnections(nconnections),
     d_nrows(200),
     d_port(pmt::mp("freq")),
+    d_port_bw(pmt::mp("bw")),
     d_parent(parent)
     {
       // Required now for Qt; argc must be greater than 0 and argv
@@ -108,6 +112,11 @@ namespace gr {
       buildwindow();
 
       initialize();
+
+      // setup bw input port
+      message_port_register_in(d_port_bw);
+      set_msg_handler(d_port_bw,
+                      boost::bind(&waterfall_sink_c_impl::handle_set_bw, this, _1));   
 
       // setup output message port to post frequency when display is
       // double-clicked
@@ -159,7 +168,7 @@ namespace gr {
 	d_qApplication = qApp;
       }
       else {
-#if QT_VERSION >= 0x040500
+#if QT_VERSION >= 0x040500 && QT_VERSION < 0x050000
         std::string style = prefs::singleton()->get_string("qtgui", "style", "raster");
         QApplication::setGraphicsSystem(QString(style.c_str()));
 #endif
@@ -291,19 +300,19 @@ namespace gr {
     }
 
     void
-    waterfall_sink_c_impl::set_line_label(int which, const std::string &label)
+    waterfall_sink_c_impl::set_line_label(unsigned int which, const std::string &label)
     {
       d_main_gui->setLineLabel(which, label.c_str());
     }
 
     void
-    waterfall_sink_c_impl::set_color_map(int which, const int color)
+    waterfall_sink_c_impl::set_color_map(unsigned int which, const int color)
     {
       d_main_gui->setColorMap(which, color);
     }
 
     void
-    waterfall_sink_c_impl::set_line_alpha(int which, double alpha)
+    waterfall_sink_c_impl::set_line_alpha(unsigned int which, double alpha)
     {
       d_main_gui->setAlpha(which, (int)(255.0*alpha));
     }
@@ -321,19 +330,19 @@ namespace gr {
     }
 
     std::string
-    waterfall_sink_c_impl::line_label(int which)
+    waterfall_sink_c_impl::line_label(unsigned int which)
     {
       return d_main_gui->lineLabel(which).toStdString();
     }
 
     int
-    waterfall_sink_c_impl::color_map(int which)
+    waterfall_sink_c_impl::color_map(unsigned int which)
     {
       return d_main_gui->getColorMap(which);
     }
 
     double
-    waterfall_sink_c_impl::line_alpha(int which)
+    waterfall_sink_c_impl::line_alpha(unsigned int which)
     {
       return (double)(d_main_gui->markerAlpha(which))/255.0;
     }
@@ -345,13 +354,13 @@ namespace gr {
     }
 
     double
-    waterfall_sink_c_impl::min_intensity(int which)
+    waterfall_sink_c_impl::min_intensity(unsigned int which)
     {
       return d_main_gui->getMinIntensity(which);
     }
 
     double
-    waterfall_sink_c_impl::max_intensity(int which)
+    waterfall_sink_c_impl::max_intensity(unsigned int which)
     {
       return d_main_gui->getMaxIntensity(which);
     }
@@ -508,6 +517,19 @@ namespace gr {
         }
       }
     }
+
+    void
+    waterfall_sink_c_impl::handle_set_bw(pmt::pmt_t msg)
+    {
+      if(pmt::is_pair(msg)) {
+        pmt::pmt_t x = pmt::cdr(msg);
+        if(pmt::is_real(x)) {
+          d_bandwidth = pmt::to_double(x);
+          d_qApplication->postEvent(d_main_gui,
+                                    new SetFreqEvent(d_center_freq, d_bandwidth));
+        }
+      }
+    }        
 
     void
     waterfall_sink_c_impl::set_time_per_fft(double t)

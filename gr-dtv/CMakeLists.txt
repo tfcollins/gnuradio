@@ -50,40 +50,6 @@ SET(GR_PKG_DTV_EXAMPLES_DIR ${GR_PKG_DATA_DIR}/examples/dtv)
 if(ENABLE_GR_DTV)
 
 ########################################################################
-# Setup CPack components
-########################################################################
-include(GrPackage)
-CPACK_SET(CPACK_COMPONENT_GROUP_DTV_DESCRIPTION "GNU Radio DTV Blocks")
-
-CPACK_COMPONENT("dtv_runtime"
-    GROUP        "DTV"
-    DISPLAY_NAME "Runtime"
-    DESCRIPTION  "Runtime"
-    DEPENDS      "runtime_runtime"
-)
-
-CPACK_COMPONENT("dtv_devel"
-    GROUP        "DTV"
-    DISPLAY_NAME "Development"
-    DESCRIPTION  "C++ headers, package config, import libraries"
-    DEPENDS      "runtime_devel"
-)
-
-CPACK_COMPONENT("dtv_python"
-    GROUP        "DTV"
-    DISPLAY_NAME "Python"
-    DESCRIPTION  "Python modules for runtime; GRC xml files"
-    DEPENDS      "runtime_python;dtv_runtime"
-)
-
-CPACK_COMPONENT("dtv_swig"
-    GROUP        "DTV"
-    DISPLAY_NAME "SWIG"
-    DESCRIPTION  "SWIG development .i files"
-    DEPENDS      "runtime_swig;dtv_python;dtv_devel"
-)
-
-########################################################################
 # Add subdirectories
 ########################################################################
 add_subdirectory(include/gnuradio/dtv)
@@ -91,10 +57,12 @@ add_subdirectory(lib)
 if(ENABLE_PYTHON)
     add_subdirectory(swig)
     add_subdirectory(python/dtv)
-    add_subdirectory(grc)
     add_subdirectory(examples)
     add_subdirectory(apps)
 endif(ENABLE_PYTHON)
+if(ENABLE_GRC)
+    add_subdirectory(grc)
+endif(ENABLE_GRC)
 add_subdirectory(docs)
 
 ########################################################################
@@ -108,7 +76,6 @@ configure_file(
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-dtv.pc
     DESTINATION ${GR_LIBRARY_DIR}/pkgconfig
-    COMPONENT "dtv_devel"
 )
 
 endif(ENABLE_GR_DTV)

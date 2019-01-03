@@ -20,10 +20,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include <gnuradio/qtgui/freqdisplayform.h>
+
 #include <cmath>
 #include <QMessageBox>
 #include <QSpacerItem>
-#include <gnuradio/qtgui/freqdisplayform.h>
 #include <gnuradio/qtgui/freqcontrolpanel.h>
 #include <iostream>
 
@@ -179,7 +180,7 @@ FreqDisplayForm::setupControlPanel()
           d_controlpanel, SLOT(toggleGrid(bool)));
   connect(d_axislabelsmenu, SIGNAL(triggered(bool)),
           d_controlpanel, SLOT(toggleAxisLabels(bool)));
-  connect(d_sizemenu, SIGNAL(whichTrigger(int)),
+  connect(d_sizemenu, SIGNAL(whichTrigger(unsigned int)),
 	  d_controlpanel, SLOT(toggleFFTSize(int)));
   connect(d_winmenu, SIGNAL(whichTrigger(gr::filter::firdes::win_type)),
 	  d_controlpanel, SLOT(toggleFFTWindow(gr::filter::firdes::win_type)));

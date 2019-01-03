@@ -44,12 +44,12 @@ namespace gr {
       : sync_block("annotator_1to1",
                       io_signature::make(1, -1, sizeof_stream_item),
                       io_signature::make(1, -1, sizeof_stream_item)),
-        d_itemsize(sizeof_stream_item), d_when((uint64_t)when)
+        d_when((uint64_t)when)
     {
       set_tag_propagation_policy(TPP_ONE_TO_ONE);
 
       d_tag_counter = 0;
-      set_relative_rate(1.0);
+      set_relative_rate(1, 1);
     }
 
     annotator_1to1_impl::~annotator_1to1_impl()

@@ -46,40 +46,6 @@ GR_SET_GLOBAL(GR_BLOCKS_INCLUDE_DIRS
 if(ENABLE_GR_BLOCKS)
 
 ########################################################################
-# Setup CPack components
-########################################################################
-include(GrPackage)
-CPACK_SET(CPACK_COMPONENT_GROUP_BLOCKS_DESCRIPTION "GNU Radio Basic Blocks")
-
-CPACK_COMPONENT("blocks_runtime"
-    GROUP        "Blocks"
-    DISPLAY_NAME "Runtime"
-    DESCRIPTION  "Runtime"
-    DEPENDS      "runtime_runtime"
-)
-
-CPACK_COMPONENT("blocks_devel"
-    GROUP        "Blocks"
-    DISPLAY_NAME "Development"
-    DESCRIPTION  "C++ headers, package config, import libraries"
-    DEPENDS      "runtime_devel"
-)
-
-CPACK_COMPONENT("blocks_python"
-    GROUP        "Blocks"
-    DISPLAY_NAME "Python"
-    DESCRIPTION  "Python modules for runtime; GRC xml files"
-    DEPENDS      "runtime_python;blocks_runtime"
-)
-
-CPACK_COMPONENT("blocks_swig"
-    GROUP        "Blocks"
-    DISPLAY_NAME "SWIG"
-    DESCRIPTION  "SWIG development .i files"
-    DEPENDS      "runtime_swig;blocks_python;blocks_devel"
-)
-
-########################################################################
 # Add subdirectories
 ########################################################################
 add_subdirectory(include/gnuradio/blocks)
@@ -89,12 +55,13 @@ add_subdirectory(lib)
 #endif(ENABLE_TESTING)
 if(ENABLE_PYTHON)
      add_subdirectory(python/blocks)
-     add_subdirectory(python/grc_gnuradio)
      add_subdirectory(swig)
-     add_subdirectory(grc)
      add_subdirectory(docs)
      add_subdirectory(examples)
 endif(ENABLE_PYTHON)
+if(ENABLE_GRC)
+    add_subdirectory(grc)
+endif(ENABLE_GRC)
 
 ########################################################################
 # Create Pkg Config File
@@ -107,7 +74,6 @@ configure_file(
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-blocks.pc
     DESTINATION ${GR_LIBRARY_DIR}/pkgconfig
-    COMPONENT "blocks_devel"
 )
 
 endif(ENABLE_GR_BLOCKS)

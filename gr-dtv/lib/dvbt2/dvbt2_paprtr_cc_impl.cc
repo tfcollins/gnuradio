@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* 
- * Copyright 2015-2017 Free Software Foundation, Inc.
+ * Copyright 2015-2018 Free Software Foundation, Inc.
  * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,9 @@
 #include "config.h"
 #endif
 
-#include <gnuradio/io_signature.h>
 #include "dvbt2_paprtr_cc_impl.h"
+#include <gnuradio/io_signature.h>
+#include <gnuradio/math.h>
 #include <volk/volk.h>
 
 /* An early exit from the iteration loop is a very effective optimization */
@@ -34,7 +35,7 @@ namespace gr {
   namespace dtv {
 
     dvbt2_paprtr_cc::sptr
-    dvbt2_paprtr_cc::make(dvbt2_extended_carrier_t carriermode, dvbt2_fftsize_t fftsize, dvbt2_pilotpattern_t pilotpattern, dvb_guardinterval_t guardinterval, int numdatasyms, dvbt2_papr_t paprmode, dvbt2_version_t version, float vclip, int iterations, int vlength)
+    dvbt2_paprtr_cc::make(dvbt2_extended_carrier_t carriermode, dvbt2_fftsize_t fftsize, dvbt2_pilotpattern_t pilotpattern, dvb_guardinterval_t guardinterval, int numdatasyms, dvbt2_papr_t paprmode, dvbt2_version_t version, float vclip, int iterations, unsigned int vlength)
     {
       return gnuradio::get_initial_sptr
         (new dvbt2_paprtr_cc_impl(carriermode, fftsize, pilotpattern, guardinterval, numdatasyms, paprmode, version, vclip, iterations, vlength));
@@ -43,7 +44,7 @@ namespace gr {
     /*
      * The private constructor
      */
-    dvbt2_paprtr_cc_impl::dvbt2_paprtr_cc_impl(dvbt2_extended_carrier_t carriermode, dvbt2_fftsize_t fftsize, dvbt2_pilotpattern_t pilotpattern, dvb_guardinterval_t guardinterval, int numdatasyms, dvbt2_papr_t paprmode, dvbt2_version_t version, float vclip, int iterations, int vlength)
+    dvbt2_paprtr_cc_impl::dvbt2_paprtr_cc_impl(dvbt2_extended_carrier_t carriermode, dvbt2_fftsize_t fftsize, dvbt2_pilotpattern_t pilotpattern, dvb_guardinterval_t guardinterval, int numdatasyms, dvbt2_papr_t paprmode, dvbt2_version_t version, float vclip, int iterations, unsigned int vlength)
       : gr::sync_block("dvbt2_paprtr_cc",
               gr::io_signature::make(1, 1, sizeof(gr_complex) * vlength),
               gr::io_signature::make(1, 1, sizeof(gr_complex) * vlength))
@@ -774,7 +775,7 @@ namespace gr {
                 u = (in[m] + c[m]) / y;
                 alpha = y - v_clip;
                 for (int n = 0; n < N_TR; n++) {
-                  vtemp = (-2.0 * M_PI * m * ((papr_map[n] + shift) - center)) / papr_fft_size;
+                  vtemp = (-2.0 * GR_M_PI * m * ((papr_map[n] + shift) - center)) / papr_fft_size;
                   ctemp[n] = std::exp(gr_complexd(0.0, vtemp));
                 }
                 volk_32fc_s32fc_multiply_32fc(v, ctemp, u, N_TR);

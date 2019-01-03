@@ -48,14 +48,20 @@ class gr::block : public gr::basic_block
   void declare_sample_delay(unsigned int delay);
   unsigned sample_delay(int which) const;
 
+  void set_output_multiple(int multiple);
   int  output_multiple () const;
   double relative_rate () const;
+  uint64_t relative_rate_i () const;
+  uint64_t relative_rate_d () const;
 
   bool start();
   bool stop();
 
   uint64_t nitems_read(unsigned int which_input);
   uint64_t nitems_written(unsigned int which_output);
+
+  void set_log_level(std::string level);
+  std::string log_level();
 
   // Methods to manage the block's max_noutput_items size.
   int max_noutput_items();

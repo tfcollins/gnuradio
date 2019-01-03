@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /* 
- * Copyright 2015,2016 Free Software Foundation, Inc.
+ * Copyright 2015,2016,2018 Free Software Foundation, Inc.
  * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,15 +22,16 @@
 #include "config.h"
 #endif
 
-#include <gnuradio/io_signature.h>
 #include "dvbt2_pilotgenerator_cc_impl.h"
+#include <gnuradio/io_signature.h>
+#include <gnuradio/math.h>
 #include <volk/volk.h>
 
 namespace gr {
   namespace dtv {
 
     dvbt2_pilotgenerator_cc::sptr
-    dvbt2_pilotgenerator_cc::make(dvbt2_extended_carrier_t carriermode, dvbt2_fftsize_t fftsize, dvbt2_pilotpattern_t pilotpattern, dvb_guardinterval_t guardinterval, int numdatasyms, dvbt2_papr_t paprmode, dvbt2_version_t version, dvbt2_preamble_t preamble, dvbt2_misogroup_t misogroup, dvbt2_equalization_t equalization, dvbt2_bandwidth_t bandwidth, int vlength)
+    dvbt2_pilotgenerator_cc::make(dvbt2_extended_carrier_t carriermode, dvbt2_fftsize_t fftsize, dvbt2_pilotpattern_t pilotpattern, dvb_guardinterval_t guardinterval, int numdatasyms, dvbt2_papr_t paprmode, dvbt2_version_t version, dvbt2_preamble_t preamble, dvbt2_misogroup_t misogroup, dvbt2_equalization_t equalization, dvbt2_bandwidth_t bandwidth, unsigned int vlength)
     {
       return gnuradio::get_initial_sptr
         (new dvbt2_pilotgenerator_cc_impl(carriermode, fftsize, pilotpattern, guardinterval, numdatasyms, paprmode, version, preamble, misogroup, equalization, bandwidth, vlength));
@@ -39,7 +40,7 @@ namespace gr {
     /*
      * The private constructor
      */
-    dvbt2_pilotgenerator_cc_impl::dvbt2_pilotgenerator_cc_impl(dvbt2_extended_carrier_t carriermode, dvbt2_fftsize_t fftsize, dvbt2_pilotpattern_t pilotpattern, dvb_guardinterval_t guardinterval, int numdatasyms, dvbt2_papr_t paprmode, dvbt2_version_t version, dvbt2_preamble_t preamble, dvbt2_misogroup_t misogroup, dvbt2_equalization_t equalization, dvbt2_bandwidth_t bandwidth, int vlength)
+    dvbt2_pilotgenerator_cc_impl::dvbt2_pilotgenerator_cc_impl(dvbt2_extended_carrier_t carriermode, dvbt2_fftsize_t fftsize, dvbt2_pilotpattern_t pilotpattern, dvb_guardinterval_t guardinterval, int numdatasyms, dvbt2_papr_t paprmode, dvbt2_version_t version, dvbt2_preamble_t preamble, dvbt2_misogroup_t misogroup, dvbt2_equalization_t equalization, dvbt2_bandwidth_t bandwidth, unsigned int vlength)
       : gr::block("dvbt2_pilotgenerator_cc",
               gr::io_signature::make(1, 1, sizeof(gr_complex)),
               gr::io_signature::make(1, 1, sizeof(gr_complex) * vlength))
@@ -1112,8 +1113,8 @@ namespace gr {
           break;
       }
       fstep = fs / vlength;
-      for (int i = 0; i < vlength / 2; i++) {
-        x = M_PI * f / fs;
+      for (unsigned int i = 0; i < vlength / 2; i++) {
+        x = GR_M_PI * f / fs;
         if (i == 0) {
           sinc = 1.0;
         }
@@ -1126,7 +1127,7 @@ namespace gr {
         f = f + fstep;
       }
       sincrms = std::sqrt(sincrms / (vlength / 2));
-      for (int i = 0; i < vlength; i++) {
+      for (unsigned int i = 0; i < vlength; i++) {
         inverse_sinc[i] *= sincrms;
       }
       equalization_enable = equalization;
@@ -1136,7 +1137,14 @@ namespace gr {
         GR_LOG_FATAL(d_logger, "Pilot Generator and IFFT, cannot allocate memory for ofdm_fft.");
         throw std::bad_alloc();
       }
+
       num_symbols = numdatasyms + N_P2;
+      data_carrier_map.resize(num_symbols);
+      for (std::vector< std::vector<int> >::size_type i = 0; i != data_carrier_map.size(); i++){
+        data_carrier_map[i].resize(MAX_CARRIERS);
+      }
+      init_pilots();
+
       set_output_multiple(num_symbols);
     }
 
@@ -1178,9 +1186,11 @@ namespace gr {
     }
 
     void
-    dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
+    dvbt2_pilotgenerator_cc_impl::init_pilots()
     {
+      for (int symbol = 0; symbol < num_symbols; ++symbol){
       int remainder, shift;
+      std::vector<int> &data_carrier_map = this->data_carrier_map[symbol];
       for (int i = 0; i < C_PS; i++) {
         data_carrier_map[i] = DATA_CARRIER;
       }
@@ -2674,7 +2684,10 @@ namespace gr {
             break;
         }
       }
+      }
     }
+
+    const gr_complex zero = gr_complex(0.0, 0.0);
 
     int
     dvbt2_pilotgenerator_cc_impl::general_work (int noutput_items,
@@ -2684,17 +2697,14 @@ namespace gr {
     {
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
-      gr_complex zero;
       gr_complex *dst;
       int L_FC = 0;
 
-      zero = gr_complex(0.0, 0.0);
       if (N_FC != 0) {
         L_FC = 1;
       }
       for (int i = 0; i < noutput_items; i += num_symbols) {
         for (int j = 0; j < num_symbols; j++) {
-          init_pilots(j);
           if (j < N_P2) {
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
@@ -2744,19 +2754,19 @@ namespace gr {
               *out++ = zero;
             }
             for (int n = 0; n < C_PS; n++) {
-              if (data_carrier_map[n] == SCATTERED_CARRIER) {
+              if (data_carrier_map[j][n] == SCATTERED_CARRIER) {
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
+              else if (data_carrier_map[j][n] == SCATTERED_CARRIER_INVERTED) {
                 *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == CONTINUAL_CARRIER) {
+              else if (data_carrier_map[j][n] == CONTINUAL_CARRIER) {
                 *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
+              else if (data_carrier_map[j][n] == CONTINUAL_CARRIER_INVERTED) {
                 *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == TRPAPR_CARRIER) {
+              else if (data_carrier_map[j][n] == TRPAPR_CARRIER) {
                 *out++ = zero;
               }
               else {

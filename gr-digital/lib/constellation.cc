@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2010-2012,2014 Free Software Foundation, Inc.
+ * Copyright 2010-2012,2014,2018 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -28,23 +28,23 @@
 #include <gnuradio/digital/constellation.h>
 #include <gnuradio/math.h>
 #include <gnuradio/gr_complex.h>
+
+#include <boost/format.hpp>
+
 #include <cstdlib>
 #include <cfloat>
 #include <stdexcept>
-#include <boost/format.hpp>
 #include <iostream>
 
 namespace gr {
   namespace digital {
 
-#define M_TWOPI (2*M_PI)
-#define SQRT_TWO 0.707107
-
     // Base Constellation Class
     constellation::constellation(std::vector<gr_complex> constell,
                                  std::vector<int> pre_diff_code,
                                  unsigned int rotational_symmetry,
-                                 unsigned int dimensionality
+                                 unsigned int dimensionality,
+				 bool normalize_points
     ) :
       d_constellation(constell),
       d_pre_diff_code(pre_diff_code),
@@ -57,16 +57,18 @@ namespace gr {
       d_lut_precision(0),
       d_lut_scale(0)
     {
-      // Scale constellation points so that average magnitude is 1.
-      float summed_mag = 0;
       unsigned int constsize = d_constellation.size();
-      for (unsigned int i=0; i<constsize; i++) {
-        gr_complex c = d_constellation[i];
-        summed_mag += sqrt(c.real()*c.real() + c.imag()*c.imag());
-      }
-      d_scalefactor = constsize/summed_mag;
-      for (unsigned int i=0; i<constsize; i++) {
-        d_constellation[i] = d_constellation[i]*d_scalefactor;
+      if (normalize_points) {
+	// Scale constellation points so that average magnitude is 1.
+	float summed_mag = 0;
+	for (unsigned int i=0; i<constsize; i++) {
+	  gr_complex c = d_constellation[i];
+	  summed_mag += sqrt(c.real()*c.real() + c.imag()*c.imag());
+	}
+	d_scalefactor = constsize/summed_mag;
+	for (unsigned int i=0; i<constsize; i++) {
+	  d_constellation[i] = d_constellation[i]*d_scalefactor;
+	}
       }
       if(pre_diff_code.size() == 0)
         d_apply_pre_diff_code = false;
@@ -407,19 +409,21 @@ namespace gr {
     constellation_calcdist::make(std::vector<gr_complex> constell,
                                  std::vector<int> pre_diff_code,
                                  unsigned int rotational_symmetry,
-                                 unsigned int dimensionality)
+                                 unsigned int dimensionality,
+				 bool normalize_points)
     {
       return constellation_calcdist::sptr(
         new constellation_calcdist(constell, pre_diff_code,
-                                   rotational_symmetry, dimensionality));
+                                   rotational_symmetry, dimensionality, normalize_points));
     }
 
     constellation_calcdist::constellation_calcdist(
       std::vector<gr_complex> constell,
       std::vector<int> pre_diff_code,
       unsigned int rotational_symmetry,
-      unsigned int dimensionality)
-      : constellation(constell, pre_diff_code, rotational_symmetry, dimensionality)
+      unsigned int dimensionality,
+      bool normalize_points)
+      : constellation(constell, pre_diff_code, rotational_symmetry, dimensionality, normalize_points)
     {}
 
     // Chooses points base on shortest distance.
@@ -624,7 +628,7 @@ namespace gr {
     constellation_psk::get_sector(const gr_complex *sample)
     {
       float phase = arg(*sample);
-      float width = M_TWOPI / n_sectors;
+      float width = GR_M_TWOPI / n_sectors;
       int sector = floor(phase/width + 0.5);
       if(sector < 0)
         sector += n_sectors;
@@ -634,7 +638,7 @@ namespace gr {
     unsigned int
     constellation_psk::calc_sector_value(unsigned int sector)
     {
-      float phase = sector * M_TWOPI / n_sectors;
+      float phase = sector * GR_M_TWOPI / n_sectors;
       gr_complex sector_center = gr_complex(cos(phase), sin(phase));
       unsigned int closest_point = get_closest_point(&sector_center);
       return closest_point;
@@ -684,16 +688,16 @@ namespace gr {
     {
       d_constellation.resize(4);
       // Gray-coded
-      d_constellation[0] = gr_complex(-SQRT_TWO, -SQRT_TWO);
-      d_constellation[1] = gr_complex(SQRT_TWO, -SQRT_TWO);
-      d_constellation[2] = gr_complex(-SQRT_TWO, SQRT_TWO);
-      d_constellation[3] = gr_complex(SQRT_TWO, SQRT_TWO);
+      d_constellation[0] = gr_complex(-GR_M_SQRT2, -GR_M_SQRT2);
+      d_constellation[1] = gr_complex(GR_M_SQRT2, -GR_M_SQRT2);
+      d_constellation[2] = gr_complex(-GR_M_SQRT2, GR_M_SQRT2);
+      d_constellation[3] = gr_complex(GR_M_SQRT2, GR_M_SQRT2);
 
       /*
-        d_constellation[0] = gr_complex(SQRT_TWO, SQRT_TWO);
-        d_constellation[1] = gr_complex(-SQRT_TWO, SQRT_TWO);
-        d_constellation[2] = gr_complex(SQRT_TWO, -SQRT_TWO);
-        d_constellation[3] = gr_complex(SQRT_TWO, -SQRT_TWO);
+        d_constellation[0] = gr_complex(GR_M_SQRT2, GR_M_SQRT2);
+        d_constellation[1] = gr_complex(-GR_M_SQRT2, GR_M_SQRT2);
+        d_constellation[2] = gr_complex(GR_M_SQRT2, -GR_M_SQRT2);
+        d_constellation[3] = gr_complex(GR_M_SQRT2, -GR_M_SQRT2);
       */
 
       d_pre_diff_code.resize(4);
@@ -752,10 +756,10 @@ namespace gr {
       // us to use differential encodings (through diff_encode and
       // diff_decode) on the symbols.
       d_constellation.resize(4);
-      d_constellation[0] = gr_complex(+SQRT_TWO, +SQRT_TWO);
-      d_constellation[1] = gr_complex(-SQRT_TWO, +SQRT_TWO);
-      d_constellation[2] = gr_complex(-SQRT_TWO, -SQRT_TWO);
-      d_constellation[3] = gr_complex(+SQRT_TWO, -SQRT_TWO);
+      d_constellation[0] = gr_complex(+GR_M_SQRT2, +GR_M_SQRT2);
+      d_constellation[1] = gr_complex(-GR_M_SQRT2, +GR_M_SQRT2);
+      d_constellation[2] = gr_complex(-GR_M_SQRT2, -GR_M_SQRT2);
+      d_constellation[3] = gr_complex(+GR_M_SQRT2, -GR_M_SQRT2);
 
       // Use this mapping to convert to gray code before diff enc.
       d_pre_diff_code.resize(4);
@@ -808,7 +812,7 @@ namespace gr {
 
     constellation_8psk::constellation_8psk()
     {
-      float angle = M_PI/8.0;
+      float angle = GR_M_PI/8.0;
       d_constellation.resize(8);
       // Gray-coded
       d_constellation[0] = gr_complex(cos( 1*angle), sin( 1*angle));
@@ -858,7 +862,7 @@ namespace gr {
 
     constellation_8psk_natural::constellation_8psk_natural()
     {
-      float angle = M_PI/8.0;
+      float angle = GR_M_PI/8.0;
       d_constellation.resize(8);
       // Natural-mapping
       d_constellation[0] = gr_complex(cos( 15*angle), sin( 15*angle));
