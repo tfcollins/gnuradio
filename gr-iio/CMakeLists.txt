@@ -21,8 +21,6 @@
 # Setup dependencies
 ########################################################################
 include(GrBoost)
-include(FindFLEX REQUIRED)
-find_package(BISON "3.0.2" REQUIRED)
 
 ########################################################################
 # Register component
