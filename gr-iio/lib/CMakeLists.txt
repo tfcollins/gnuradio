@@ -33,6 +33,8 @@ list(APPEND iio_sources
   fmcomms5_sink_impl.cc
   pluto_source_impl.cc
   pluto_sink_impl.cc
+  attr_source_impl.cc
+  attr_sink_impl.cc
 )
 
 set(iio_sources "${iio_sources}" PARENT_SCOPE)

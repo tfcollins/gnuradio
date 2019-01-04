@@ -26,6 +26,7 @@ install(FILES
   fmcomms2_source.h fmcomms2_sink.h
   fmcomms5_source.h fmcomms5_sink.h
   pluto_source.h pluto_sink.h
+  attr_source.h attr_sink.h
   DESTINATION ${GR_INCLUDE_DIR}/gnuradio/iio
   COMPONENT "iio_devel"
 )

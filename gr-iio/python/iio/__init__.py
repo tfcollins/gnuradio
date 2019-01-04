@@ -37,3 +37,5 @@ except ImportError:
     from .iio_swig import *
     from .iio_pluto_source_swig import *
     from .iio_pluto_sink_swig import *
+
+from attr_updater import attr_updater
