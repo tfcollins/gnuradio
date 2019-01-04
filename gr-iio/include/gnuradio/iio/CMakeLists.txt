@@ -28,5 +28,4 @@ install(FILES
   pluto_source.h pluto_sink.h
   attr_source.h attr_sink.h
   DESTINATION ${GR_INCLUDE_DIR}/gnuradio/iio
-  COMPONENT "iio_devel"
 )

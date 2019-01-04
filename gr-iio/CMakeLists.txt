@@ -77,7 +77,6 @@ configure_file(
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-iio.pc
     DESTINATION ${GR_LIBRARY_DIR}/pkgconfig
-    COMPONENT "iio_devel"
 )
 
 endif(ENABLE_GR_IIO)

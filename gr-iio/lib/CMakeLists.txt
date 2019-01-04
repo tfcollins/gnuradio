@@ -53,4 +53,4 @@ list(APPEND iio_libs
 add_library(gnuradio-iio SHARED ${iio_sources})
 target_link_libraries(gnuradio-iio ${iio_libs})
 
-GR_LIBRARY_FOO(gnuradio-iio RUNTIME_COMPONENT "iio_runtime" DEVEL_COMPONENT "iio_devel")
+GR_LIBRARY_FOO(gnuradio-iio)

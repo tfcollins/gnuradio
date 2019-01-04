@@ -21,9 +21,6 @@
 # Include python install macros
 ########################################################################
 include(GrPython)
-# if(NOT PYTHONINTERP_FOUND)
-#     return()
-# endif()
 
 ########################################################################
 # Install python sources
@@ -33,5 +30,4 @@ GR_PYTHON_INSTALL(
     __init__.py
     attr_updater.py
     DESTINATION ${GR_PYTHON_DIR}/gnuradio/iio
-    COMPONENT "iio_python"
 )
