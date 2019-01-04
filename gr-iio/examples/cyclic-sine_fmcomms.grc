@@ -7,7 +7,7 @@ options:
     gen_linking: dynamic
     generate_options: qt_gui
     hier_block_src_path: '.:'
-    id: cyclic_sine_pluto
+    id: cyclic_sine_fmcomms
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -15,7 +15,7 @@ options:
     run_command: '{python} -u {filename}'
     run_options: prompt
     sizing_mode: fixed
-    title: 'Pluto Example: Cyclic-Sine'
+    title: 'FMComms Example: Cyclic-Sine'
   states:
     coordinate: [8, 8]
     rotation: 0
@@ -28,6 +28,14 @@ blocks:
     value: '2084000'
   states:
     coordinate: [184, 12]
+    rotation: 0
+    state: enabled
+- name: uri
+  id: variable
+  parameters:
+    value: '''ip:192.168.2.1'''
+  states:
+    coordinate: [284, 12]
     rotation: 0
     state: enabled
 - name: analog_sig_source_x_0
@@ -43,22 +51,27 @@ blocks:
     coordinate: [171, 400]
     rotation: 0
     state: true
-- name: iio_pluto_sink_0
-  id: iio_pluto_sink
+- name: iio_fmcomms2_sink_0
+  id: iio_fmcomms2_sink
   parameters:
     attenuation1: '30.0'
+    attenuation2: '10.0'
     auto_filter: 'True'
     bandwidth: '20000000'
     buffer_size: '32768'
     cyclic: 'False'
     frequency: '2400000000'
+    rf_port_select: '''A'''
     samplerate: samp_rate
+    tx1_en: 'True'
+    tx2_en: 'False'
+    uri: uri
   states:
-    coordinate: [421, 337]
+    coordinate: [433, 357]
     rotation: 0
     state: true
-- name: iio_pluto_source_0
-  id: iio_pluto_source
+- name: iio_fmcomms2_source_0
+  id: iio_fmcomms2_source
   parameters:
     auto_filter: 'True'
     bandwidth: '20000000'
@@ -66,12 +79,18 @@ blocks:
     buffer_size: '32768'
     frequency: '2400000000'
     gain1: '''slow_attack'''
+    gain2: '''manual'''
     manual_gain1: '64'
+    manual_gain2: '64'
     quadrature: 'True'
+    rf_port_select: '''A_BALANCED'''
     rfdc: 'True'
+    rx1_en: 'True'
+    rx2_en: 'False'
     samplerate: samp_rate
+    uri: uri
   states:
-    coordinate: [143, 125]
+    coordinate: [144, 136]
     rotation: 0
     state: true
 - name: qtgui_time_sink_x_0
@@ -166,8 +185,8 @@ blocks:
     state: true
 
 connections:
-- [analog_sig_source_x_0, '0', iio_pluto_sink_0, '0']
-- [iio_pluto_source_0, '0', qtgui_time_sink_x_0, '0']
+- [analog_sig_source_x_0, '0', iio_fmcomms2_sink_0, '0']
+- [iio_fmcomms2_source_0, '0', qtgui_time_sink_x_0, '0']
 
 metadata:
   file_format: 1
