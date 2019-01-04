@@ -3,10 +3,6 @@ label: IIO Attribute Updater
 flags: [ python ]
 
 parameters:
--   id: device
-    label: Device Name/ID
-    dtype: string
-
 -   id: attr
     label: Attribute Name
     dtype: string
@@ -29,6 +25,8 @@ outputs:
 templates:
     imports: from gnuradio import iio
     make: iio.attr_updater(${attr}, ${value}, ${update_interval_ms})
+    callbacks:
+      - update_value(${value})
 
 documentation: https://wiki.analog.com/resources/tools-software/linux-software/gnuradio
 

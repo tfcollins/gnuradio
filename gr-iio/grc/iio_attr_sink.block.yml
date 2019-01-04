@@ -22,9 +22,7 @@ parameters:
 -   id: required_enable
     label: Required Enable
     dtype: bool
-    default: 'Not Required'
-    options: ['False', 'True']
-    option_labels: ['Not Required', 'Enable']
+    default: False
     hide: ${ ('part' if (attr_type == '4') else 'all') }
 
 -   id: output
@@ -47,7 +45,7 @@ inputs:
 
 templates:
     imports: from gnuradio import iio
-    make: iio.iio_attr_sink(${uri}, ${device}, ${channel}, ${attr_type}, ${output}, ${required_enable})
+    make: iio.attr_sink(${uri}, ${device}, ${channel}, ${attr_type}, ${output}, ${required_enable})
 
 documentation: https://wiki.analog.com/resources/tools-software/linux-software/gnuradio
 
