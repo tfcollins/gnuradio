@@ -48,8 +48,7 @@ foreach(swigfile ${GR_SWIG_BLOCK_IFILES})
     ${CMAKE_CURRENT_BINARY_DIR}/../include/gnuradio/iio
   )
   set(GR_SWIG_DOCS_TARGET_DEPS runtime_swig_swig_doc)
-  set(GR_SWIG_LIBRARIES gnuradio-iio
-    gnuradio-filter gnuradio-analog gnuradio-blocks)
+  set(GR_SWIG_LIBRARIES gnuradio-iio gnuradio-blocks)
   GR_SWIG_MAKE(${swigfile} ${swigfile}.i)
 
   GR_SWIG_INSTALL(

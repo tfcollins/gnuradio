@@ -21,6 +21,10 @@
 # Setup dependencies
 ########################################################################
 include(GrBoost)
+find_library(IIO_LIBRARIES iio)
+find_path(IIO_INCLUDE_DIRS iio.h)
+find_library(AD9361_LIBRARIES ad9361)
+find_path(AD9361_INCLUDE_DIRS ad9361.h)
 
 ########################################################################
 # Register component
