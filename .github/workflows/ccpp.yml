@@ -12,15 +12,21 @@ jobs:
     - name: setup
       run: |
         git submodule update --init
-        conda install -c conda-forge log4cpp
+        mkdir C:\deps
+        
+        wget https://anaconda.org/conda-forge/log4cpp/1.1.3/download/win-64/log4cpp-1.1.3-h6538335_1001.tar.bz2 -outfile "log4cpp.tar.bz2"
+        mkdir C:\deps\log4cpp
+        tar -C C:\deps\log4cpp -xf log4cpp.tar.bz2
+        rm log4cpp.tar.bz2
+        
         pip install mako
         pip install six
-        vcpkg install boost:x64-windows
+        #vcpkg install boost:x64-windows
         vcpkg install fftw3:x64-windows
         vcpkg install gsl:x64-windows
     - name: dir
       run: |
         mkdir build
         cd build
-        cmake -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DENABLE_INTERNAL_VOLK:BOOL=ON -DENABLE_GR_FEC:BOOL=OFF -DENABLE_GR_DIGITAL:BOOL=OFF -DENABLE_GR_DTV:BOOL=OFF -DENABLE_GR_ATSC:BOOL=OFF -DENABLE_GR_AUDIO:BOOL=OFF -DENABLE_GR_CHANNELS:BOOL=OFF -DENABLE_GR_NOAA:BOOL=OFF \ -DENABLE_GR_PAGER:BOOL=OFF -DENABLE_GR_TRELLIS:BOOL=OFF -DENABLE_GR_VOCODER:BOOL=OFF -A x64 ..
+        cmake -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DLOG4CPP_INCLUDE_DIR:PATH=C:/deps/log4cpp/Library/include -DLOG4CPP_LIBRARY:FILEPATH=C:/deps/log4cpp/Library/lib/log4cpp.lib -DENABLE_INTERNAL_VOLK:BOOL=ON -DENABLE_GR_FEC:BOOL=OFF -DENABLE_GR_DIGITAL:BOOL=OFF -DENABLE_GR_DTV:BOOL=OFF -DENABLE_GR_ATSC:BOOL=OFF -DENABLE_GR_AUDIO:BOOL=OFF -DENABLE_GR_CHANNELS:BOOL=OFF -DENABLE_GR_NOAA:BOOL=OFF \ -DENABLE_GR_PAGER:BOOL=OFF -DENABLE_GR_TRELLIS:BOOL=OFF -DENABLE_GR_VOCODER:BOOL=OFF -A x64 ..
         cmake --build . --config Release
