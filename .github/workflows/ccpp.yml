@@ -1,0 +1,22 @@
+name: C/C++ CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: setup
+      run: | 
+        vcpkg install boost:x64-windows 
+        vcpkg install fftw3:x64-windows 
+        vcpkg install doxygen:x64-windows 
+    - name: dir
+      run: mkdir build && cd build
+    - name: cmake
+      run: cmake ..
+    - name: make
+      run: make
