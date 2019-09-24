@@ -39,17 +39,14 @@ jobs:
         cmake -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" \
         -DLOG4CPP_INCLUDE_DIR:PATH=C:/deps/log4cpp/Library/include \
         -DLOG4CPP_LIBRARY:FILEPATH=C:/deps/log4cpp/Library/lib/log4cpp.lib \
-        \
         -DMPIR_INCLUDE_DIR:PATH=C:/deps/mpir/Library/include \
         -DMPIR_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpir_static.lib \
         -DMPIRXX_INCLUDE_DIR:PATH=C:/deps/mpir/Library/include \
         -DMPIRXX_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpirxx_static.lib \
-        \
         -DENABLE_INTERNAL_VOLK:BOOL=ON -DENABLE_GR_FEC:BOOL=OFF \
         -DENABLE_GR_DIGITAL:BOOL=OFF -DENABLE_GR_DTV:BOOL=OFF \
         -DENABLE_GR_ATSC:BOOL=OFF -DENABLE_GR_AUDIO:BOOL=OFF -DENABLE_GR_CHANNELS:BOOL=OFF \
         -DENABLE_GR_NOAA:BOOL=OFF \ -DENABLE_GR_PAGER:BOOL=OFF -DENABLE_GR_TRELLIS:BOOL=OFF \
         -DENABLE_GR_VOCODER:BOOL=OFF \
-        \
         -A x64 ..
         cmake --build . --config Release
