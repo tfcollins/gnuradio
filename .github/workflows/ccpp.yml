@@ -13,6 +13,7 @@ jobs:
       run: |
         git submodule update --init
         pip install mako
+        pip install six
         vcpkg install boost:x64-windows
         vcpkg install fftw3:x64-windows
         vcpkg install gsl:x64-windows
