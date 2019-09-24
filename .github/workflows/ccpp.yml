@@ -10,7 +10,8 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: setup
-      run: | 
+      run: |
+        git submodule update --init
         vcpkg install boost:x64-windows
         vcpkg install fftw3:x64-windows
         vcpkg install gsl:x64-windows
