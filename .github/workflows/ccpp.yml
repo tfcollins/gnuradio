@@ -12,7 +12,7 @@ jobs:
     - name: setup
       run: | 
         vcpkg install fftw3:x64-windows
- #       vcpkg install boost:x64-windows
+        vcpkg install gsl:x64-windows
     - name: dir
       run: mkdir build && cd build
     - name: cmake
