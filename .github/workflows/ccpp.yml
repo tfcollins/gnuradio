@@ -11,12 +11,14 @@ jobs:
     - uses: actions/checkout@v1
     - name: setup
       run: | 
-        vcpkg install boost:x64-windows 
-        vcpkg install fftw3:x64-windows 
-        vcpkg install doxygen:x64-windows 
+        vcpkg install fftw3:x64-windows
+ #       vcpkg install boost:x64-windows
     - name: dir
       run: mkdir build && cd build
     - name: cmake
-      run: cmake ..
+      run: cmake -DCMAKE_TOOLCHAIN_FILE="C:/gr-win2/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+      -DENABLE_INTERNAL_VOLK:BOOL=ON -DENABLE_GR_FEC:BOOL=OFF -DENABLE_GR_DIGITAL:BOOL=OFF -DENABLE_GR_DTV:BOOL=OFF \
+      -DENABLE_GR_ATSC:BOOL=OFF -DENABLE_GR_AUDIO:BOOL=OFF -DENABLE_GR_CHANNELS:BOOL=OFF -DENABLE_GR_NOAA:BOOL=OFF \
+      -DENABLE_GR_PAGER:BOOL=OFF -DENABLE_GR_TRELLIS:BOOL=OFF -DENABLE_GR_VOCODER:BOOL=OFF -A x64 ..
     - name: make
-      run: make
+      run: cmake --build . --config Release
