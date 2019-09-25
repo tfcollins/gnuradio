@@ -1,6 +1,17 @@
 clone_depth: 1
 
+environment:
+    VS: "Visual Studio 14 2015 Win64"
+    PYTHON: C:\Python37-x64
+    MINICONDA: C:\Miniconda3-x64
+    QT: C:\Qt\5.13.0\msvc2015_64
+
+cache: c:\tools\vcpkg\installed\
+
 install:
+    - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+    - "SET PATH=%QT%;%PATH%"
+    - "SET PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%" 
     - git submodule update --init
     - cd c:\
     - choco install -y wget
@@ -15,22 +26,75 @@ install:
     - mkdir C:\deps\mpir
     - tar -C C:\deps\mpir -xf mpir.tar.bz2
     - rm mpir.tar.bz2
-        
+
+    - wget https://anaconda.org/conda-forge/qwt/6.1.4/download/win-64/qwt-6.1.4-hd7ce7fb_1004.tar.bz2 -O "qwt.tar.bz2"
+    - mkdir C:\deps\qwt
+    - tar -C C:\deps\qwt -xf qwt.tar.bz2
+    - rm qwt.tar.bz2
+
     - wget https://sourceforge.net/projects/swig/files/swigwin/swigwin-3.0.8/swigwin-3.0.8.zip -O "swig.zip"
     - mkdir C:\deps\swig
-    - unzip swig.zip -d C:\deps\swig\
-        
+    - unzip -qq swig.zip -d C:\deps\swig\
+    - rm swig.zip
+
+    - wget https://ci.appveyor.com/api/buildjobs/udevrgym9k2rexrn/artifacts/gvsbuild-vs14-x64.tar.gz -O "gtk.tar.gz"
+    - mkdir C:\deps\gtk
+    - tar -C C:\deps\gtk -xf gtk.tar.gz
+    - rm gtk.tar.gz
+    - pip install C:\deps\gtk\release\python\pycairo-1.18.0-cp37-cp37m-win_amd64.whl
+    - pip install C:\deps\gtk\release\python\PyGObject-3.32.0-cp37-cp37m-win_amd64.whl
+
+      #    - python -m pip install --upgrade pip    
+      #    - pip install pipwin
+      #    - pipwin refresh
+      #    - pipwin install pygtk
+      #    - pipwin install pycairo_gtk
+      #    - pipwin install pygobject   
+
+    - cd C:\tools\vcpkg
+    - git pull
+    - .\bootstrap-vcpkg.bat
+    - vcpkg integrate install
+    - cd %APPVEYOR_BUILD_FOLDER%
+    - vcpkg install fftw3:x64-windows
+    - vcpkg install gsl:x64-windows
+    - vcpkg install sdl1:x64-windows
+    - vcpkg install zeromq:x64-windows
+
+    - pip install sphinx
+    - pip install pyqt5
+    - pip install pythonqwt
     - pip install mako
     - pip install six
-        
-    - vcpkg install fftw3:x64-windows
+    - pip install pyyaml
+    - pip install click
+    - pip install click-plugins
+    - pip install numpy
 
 build_script:
     - mkdir c:\projects\gnuradio\build
     - cd c:\projects\gnuradio\build
-    - cmake -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DSWIG_EXECUTABLE:FILEPATH=C:/deps/swig/swigwin-3.0.8/swig.exe -DLOG4CPP_INCLUDE_DIR:PATH=C:/deps/log4cpp/Library/include -DLOG4CPP_LIBRARY:FILEPATH=C:/deps/log4cpp/Library/lib/log4cpp.lib -DMPIR_INCLUDE_DIR:PATH=C:/deps/mpir/Library/include -DMPIR_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpir_static.lib -DMPIRXX_INCLUDE_DIR:PATH=C:/deps/mpir/Library/include -DMPIRXX_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpirxx_static.lib -DENABLE_INTERNAL_VOLK:BOOL=ON -DENABLE_GR_FEC:BOOL=OFF -DENABLE_GR_DIGITAL:BOOL=OFF -DENABLE_GR_DTV:BOOL=OFF -DENABLE_GR_ATSC:BOOL=OFF -DENABLE_GR_AUDIO:BOOL=OFF -DENABLE_GR_CHANNELS:BOOL=OFF -DENABLE_GR_NOAA:BOOL=OFF \ -DENABLE_GR_PAGER:BOOL=OFF -DENABLE_GR_TRELLIS:BOOL=OFF -DENABLE_GR_VOCODER:BOOL=OFF -A x64 ..
+    - cmake -G "%VS%" \
+            -DCMAKE_TOOLCHAIN_FILE="c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+            -DBOOST_ROOT=C:\Libraries\boost_1_69_0 \
+            -DSWIG_EXECUTABLE:FILEPATH=C:/deps/swig/swigwin-3.0.8/swig.exe \
+            -DLOG4CPP_INCLUDE_DIR:PATH=C:/deps/log4cpp/Library/include \
+            -DLOG4CPP_LIBRARY:FILEPATH=C:/deps/log4cpp/Library/lib/log4cpp.lib \
+            -DMPIR_INCLUDE_DIR:PATH=C:/deps/mpir/Library/include \
+            -DMPIR_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpir_static.lib \
+            -DMPIRXX_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpirxx_static.lib \
+            -DQWT_INCLUDE_DIRS:PATH=C:/deps/qwt/Library/include \
+            -DQWT_LIBRARIES:FILEPATH=C:/deps/qwt/Library/lib/qwt.lib \
+            -DENABLE_INTERNAL_VOLK:BOOL=ON \
+            -DENABLE_GR_AUDIO:BOOL=OFF \
+            -DENABLE_GR_QTGUI:BOOL=OFF ..
     - cmake --build . --config Release --target INSTALL
-    # Create an archive
+    # Collect libs
+    - mkdir .\gnuradio\deps
+    - copy C:\Tools\vcpkg\installed\x64-windows\lib\*.lib .\gnuradio\deps\
+    - copy c:\tools\vcpkg\installed\x64-windows\bin\*.dll .\gnuradio\deps\
+    - xcopy c:\deps\* .\gnuradio\deps\ /s /e
+    # Create archive
     - cd "c:\Program Files"
     - 7z a "c:\gnuradio-x64.zip" gnuradio
     - appveyor PushArtifact c:\gnuradio-x64.zip
