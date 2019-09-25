@@ -89,3 +89,7 @@ else()
     set(RC_MINOR_VERSION ${MINOR_VERSION})
     set(RC_MAINT_VERSION ${MAINT_VERSION})
 endif()
+
+if(WIN32)
+    string(REPLACE "-git" "" RC_MAINT_VERSION ${RC_MAINT_VERSION})
+endif()
