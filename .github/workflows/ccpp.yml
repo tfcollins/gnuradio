@@ -31,6 +31,8 @@ jobs:
         
         pip install mako
         pip install six
+        
+        vcpkg install fftw3:x64-windows
     - name: build
       run: |
         mkdir build
