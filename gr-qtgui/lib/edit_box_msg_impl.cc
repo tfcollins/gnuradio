@@ -24,11 +24,22 @@
 #include "config.h"
 #endif
 
+// Boost workaround for WIN boost error
+//#define snprintf _snprintf
+//#define snprintf        sprintf_s
+
+//#if _MSC_VER < 1900 
+//#define snprintf _snprintf
+//#endif
+
 #include "edit_box_msg_impl.h"
 
 #include <gnuradio/io_signature.h>
 #include <gnuradio/prefs.h>
 #include <gnuradio/qtgui/utils.h>
+
+//#define snprintf _snprintf
+#include <string>
 
 #include <boost/lexical_cast.hpp>
 

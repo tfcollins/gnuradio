@@ -1,48 +1,63 @@
 clone_depth: 1
 
+image:
+  - Visual Studio 2017
+
 environment:
-    VS: "Visual Studio 14 2015 Win64"
+    VS: "Visual Studio 15 Win64"
     PYTHON: C:\Python37-x64
-    MINICONDA: C:\Miniconda3-x64
-    QT: C:\Qt\5.13.0\msvc2015_64
+    #MINICONDA: C:\Miniconda3-x64
+    QT: C:\Qt\5.13.0\msvc2017_64
 
 cache: c:\tools\vcpkg\installed\
 
 install:
     - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
     - "SET PATH=%QT%;%PATH%"
-    - "SET PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%" 
+    #- "SET PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%" 
     - git submodule update --init
     - cd c:\
     - choco install -y wget
     - mkdir C:\deps
 
-    - wget https://anaconda.org/conda-forge/log4cpp/1.1.3/download/win-64/log4cpp-1.1.3-h6538335_1001.tar.bz2 -O "log4cpp.tar.bz2"
+    - wget https://anaconda.org/conda-forge/log4cpp/1.1.3/download/win-64/log4cpp-1.1.3-h6538335_1001.tar.bz2 -q -O "log4cpp.tar.bz2"
     - mkdir C:\deps\log4cpp
     - tar -C C:\deps\log4cpp -xf log4cpp.tar.bz2
     - rm log4cpp.tar.bz2
         
-    - wget https://anaconda.org/anaconda/mpir/3.0.0/download/win-64/mpir-3.0.0-hec2e145_1.tar.bz2 -O "mpir.tar.bz2"
+    - wget https://anaconda.org/anaconda/mpir/3.0.0/download/win-64/mpir-3.0.0-hec2e145_1.tar.bz2 -q -O "mpir.tar.bz2"
     - mkdir C:\deps\mpir
     - tar -C C:\deps\mpir -xf mpir.tar.bz2
     - rm mpir.tar.bz2
 
-    - wget https://anaconda.org/conda-forge/qwt/6.1.4/download/win-64/qwt-6.1.4-hd7ce7fb_1004.tar.bz2 -O "qwt.tar.bz2"
+    - wget https://anaconda.org/conda-forge/qwt/6.1.4/download/win-64/qwt-6.1.4-hd7ce7fb_1004.tar.bz2 -q -O "qwt.tar.bz2"
     - mkdir C:\deps\qwt
     - tar -C C:\deps\qwt -xf qwt.tar.bz2
     - rm qwt.tar.bz2
 
-    - wget https://sourceforge.net/projects/swig/files/swigwin/swigwin-3.0.8/swigwin-3.0.8.zip -O "swig.zip"
+    - wget https://sourceforge.net/projects/swig/files/swigwin/swigwin-3.0.8/swigwin-3.0.8.zip -q -O "swig.zip"
     - mkdir C:\deps\swig
     - unzip -qq swig.zip -d C:\deps\swig\
     - rm swig.zip
 
-    - wget https://ci.appveyor.com/api/buildjobs/udevrgym9k2rexrn/artifacts/gvsbuild-vs14-x64.tar.gz -O "gtk.tar.gz"
+    #- wget https://ci.appveyor.com/api/buildjobs/udevrgym9k2rexrn/artifacts/gvsbuild-vs14-x64.tar.gz -q -O "gtk.tar.gz"
+    - wget https://ci.appveyor.com/api/buildjobs/v8mpwb84x5swl64r/artifacts/gvsbuild-vs15-x64.tar.gz -q -O "gtk.tar.gz"
+    #- wget https://ci.appveyor.com/api/buildjobs/2vcvagpfd32w0qnv/artifacts/gvsbuild-vs14-x86.tar.gz -q -O "gtk.tar.gz"
     - mkdir C:\deps\gtk
     - tar -C C:\deps\gtk -xf gtk.tar.gz
     - rm gtk.tar.gz
-    - pip install C:\deps\gtk\release\python\pycairo-1.18.0-cp37-cp37m-win_amd64.whl
-    - pip install C:\deps\gtk\release\python\PyGObject-3.32.0-cp37-cp37m-win_amd64.whl
+    - mv C:\\deps\\gtk\\release C:\\gvsbuild
+    #- "SET PATH=C:\\deps\\gtk\\release;%PATH%"
+    - "SET PATH=C:\\gvsbuild;%PATH%"
+    - "SET PATH=C:\\gvsbuild\\lib;%PATH%"
+    - "SET PATH=C:\\gvsbuild\\bin;%PATH%"
+    - "SET PYTHONPATH=C:\\gvsbuild;%PYTHONPATH%"
+    - "SET PYTHONPATH=C:\\gvsbuild\\lib;%PYTHONPATH%"
+    - "SET PYTHONPATH=C:\\gvsbuild\\bin;%PYTHONPATH%"
+    #- pip install -v C:\deps\gtk\release\python\pycairo-1.18.0-cp37-cp37m-win_amd64.whl
+    #- pip install -v C:\deps\gtk\release\python\PyGObject-3.32.0-cp37-cp37m-win_amd64.whl
+    - pip install C:\gvsbuild\python\pycairo-1.18.0-cp37-cp37m-win_amd64.whl
+    - pip install C:\gvsbuild\python\PyGObject-3.32.0-cp37-cp37m-win_amd64.whl
 
       #    - python -m pip install --upgrade pip    
       #    - pip install pipwin
@@ -52,8 +67,8 @@ install:
       #    - pipwin install pygobject   
 
     - cd C:\tools\vcpkg
-    - git pull
-    - .\bootstrap-vcpkg.bat
+    - git pull > nul 2>&1
+    - .\bootstrap-vcpkg.bat > nul 2>&1
     - vcpkg integrate install
     - cd %APPVEYOR_BUILD_FOLDER%
     - vcpkg install fftw3:x64-windows
@@ -87,14 +102,27 @@ build_script:
             -DQWT_LIBRARIES:FILEPATH=C:/deps/qwt/Library/lib/qwt.lib \
             -DENABLE_INTERNAL_VOLK:BOOL=ON \
             -DENABLE_GR_AUDIO:BOOL=OFF \
+            -DENABLE_GR_VOCODER:BOOL=OFF \
+            -DENABLE_GR_DTV:BOOL=OFF \
+            -DENABLE_GR_TRELLIS:BOOL=OFF \
+            -DENABLE_GR_CHANNELS:BOOL=OFF \
+            -DENABLE_GR_WAVELET:BOOL=OFF \
+            -DENABLE_GR_VIDEO_SDL:BOOL=OFF \
             -DENABLE_GR_QTGUI:BOOL=OFF ..
-    - cmake --build . --config Release --target INSTALL
+    - cmake --build . --config Release -j 2 --target INSTALL
     # Collect libs
     - mkdir .\gnuradio\deps
     - copy C:\Tools\vcpkg\installed\x64-windows\lib\*.lib .\gnuradio\deps\
     - copy c:\tools\vcpkg\installed\x64-windows\bin\*.dll .\gnuradio\deps\
     - xcopy c:\deps\* .\gnuradio\deps\ /s /e
-    # Create archive
+    # Create archives
+    - 7z a "c:\gnuradio-deps-x64.zip" .\gnuradio\deps
+    - appveyor PushArtifact c:\gnuradio-deps-x64.zip
     - cd "c:\Program Files"
     - 7z a "c:\gnuradio-x64.zip" gnuradio
     - appveyor PushArtifact c:\gnuradio-x64.zip
+    
+#on_finish:
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+    
