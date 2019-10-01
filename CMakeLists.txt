@@ -195,6 +195,14 @@ if(MSVC)
     add_compile_options(/bigobj) #allow for larger object files
 endif(MSVC)
 
+# Needed for boost1.69+
+# Avoid that Python (pyerrors.h) defines snprintf and vsnprintf
+if (MSVC AND NOT MSVC_VERSION VERSION_LESS 1900)
+    add_definitions(-DHAVE_SNPRINTF)
+elseif (MINGW)
+    add_definitions(-DHAVE_SNPRINTF)
+endif()
+
 if(WIN32)
     add_definitions(-D_USE_MATH_DEFINES)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)

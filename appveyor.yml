@@ -1,65 +1,89 @@
 clone_depth: 1
 
+image:
+  - Visual Studio 2017
+
 environment:
-    VS: "Visual Studio 14 2015 Win64"
+    VS: "Visual Studio 15 Win64"
     PYTHON: C:\Python37-x64
-    MINICONDA: C:\Miniconda3-x64
-    QT: C:\Qt\5.13.0\msvc2015_64
+    QT: C:\Qt\5.13.2\msvc2017_64
+    VCVARPATHBAT: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
 
 cache: c:\tools\vcpkg\installed\
 
 install:
     - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
     - "SET PATH=%QT%;%PATH%"
-    - "SET PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%" 
     - git submodule update --init
     - cd c:\
     - choco install -y wget
+    - choco install -y svn
+    #- choco install -y doxygen.install
     - mkdir C:\deps
+    
+    - cd C:\deps
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/boost.7z -q -O boost.7z
+    - 7z x boost.7z
+    - rm boost.7z
+    - dir
+    - cd c:\
+    
+    - cd C:\deps
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/Qwt_6_1_5.7z -q -O Qwt_6_1_5.7z
+    - 7z x Qwt_6_1_5.7z
+    - rm Qwt_6_1_5.7z
+    - cd C:\
+    - "SET PATH=C:\\deps\\Qwt-6.1.5-svn\\lib;%PATH%"
+    - "SET PATH=C:\\deps\\Qwt-6.1.5-svn\\include;%PATH%"
 
-    - wget https://anaconda.org/conda-forge/log4cpp/1.1.3/download/win-64/log4cpp-1.1.3-h6538335_1001.tar.bz2 -O "log4cpp.tar.bz2"
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/log4cpp.7z -q -O "log4cpp.7z"
     - mkdir C:\deps\log4cpp
-    - tar -C C:\deps\log4cpp -xf log4cpp.tar.bz2
-    - rm log4cpp.tar.bz2
-        
-    - wget https://anaconda.org/anaconda/mpir/3.0.0/download/win-64/mpir-3.0.0-hec2e145_1.tar.bz2 -O "mpir.tar.bz2"
+    - 7z x log4cpp.7z -oC:\deps\
+    - rm log4cpp.7z
+    
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/mpir.7z -q -O "mpir.7z"
     - mkdir C:\deps\mpir
-    - tar -C C:\deps\mpir -xf mpir.tar.bz2
-    - rm mpir.tar.bz2
+    - 7z x mpir.7z -oC:\deps\
+    - rm mpir.7z
+    
+    - wget https://dl.bintray.com/zeromq/generic/libzmq-v141-x64-4_3_2.zip -q -O libzmq.zip
+    - mkdir C:\deps\libzmq
+    - unzip -qq libzmq.zip -d C:\deps\libzmq
 
-    - wget https://anaconda.org/conda-forge/qwt/6.1.4/download/win-64/qwt-6.1.4-hd7ce7fb_1004.tar.bz2 -O "qwt.tar.bz2"
-    - mkdir C:\deps\qwt
-    - tar -C C:\deps\qwt -xf qwt.tar.bz2
-    - rm qwt.tar.bz2
-
-    - wget https://sourceforge.net/projects/swig/files/swigwin/swigwin-3.0.8/swigwin-3.0.8.zip -O "swig.zip"
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/swig.7z -q -O "swig.7z"
     - mkdir C:\deps\swig
-    - unzip -qq swig.zip -d C:\deps\swig\
-    - rm swig.zip
+    - 7z x swig.7z -oC:\deps\
+    - rm swig.7z
+    - dir C:\deps\swig
 
-    - wget https://ci.appveyor.com/api/buildjobs/udevrgym9k2rexrn/artifacts/gvsbuild-vs14-x64.tar.gz -O "gtk.tar.gz"
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/uhd.7z -q -O "uhd.7z"
+    - mkdir C:\deps\uhd
+    - 7z x uhd.7z -oC:\deps\
+    - rm uhd.7z
+
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/gvsbuild-vs15-x64.7z -q -O "gvsbuild-vs15-x64.7z"
     - mkdir C:\deps\gtk
-    - tar -C C:\deps\gtk -xf gtk.tar.gz
-    - rm gtk.tar.gz
-    - pip install C:\deps\gtk\release\python\pycairo-1.18.0-cp37-cp37m-win_amd64.whl
-    - pip install C:\deps\gtk\release\python\PyGObject-3.32.0-cp37-cp37m-win_amd64.whl
-
-      #    - python -m pip install --upgrade pip    
-      #    - pip install pipwin
-      #    - pipwin refresh
-      #    - pipwin install pygtk
-      #    - pipwin install pycairo_gtk
-      #    - pipwin install pygobject   
+    - 7z x gvsbuild-vs15-x64.7z -oC:\deps\gtk
+    - rm gvsbuild-vs15-x64.7z   
+    - mv C:\deps\gtk C:\\gvsbuild
+    - "SET PATH=C:\\gvsbuild;%PATH%"
+    - "SET PATH=C:\\gvsbuild\\lib;%PATH%"
+    - "SET PATH=C:\\gvsbuild\\bin;%PATH%"
+    - "SET PYTHONPATH=C:\\gvsbuild;%PYTHONPATH%"
+    - "SET PYTHONPATH=C:\\gvsbuild\\lib;%PYTHONPATH%"
+    - "SET PYTHONPATH=C:\\gvsbuild\\bin;%PYTHONPATH%"
+    - pip install C:\gvsbuild\python\pycairo-1.18.2-cp37-cp37m-win_amd64.whl
+    - pip install C:\gvsbuild\python\PyGObject-3.34.0-cp37-cp37m-win_amd64.whl 
 
     - cd C:\tools\vcpkg
-    - git pull
-    - .\bootstrap-vcpkg.bat
+    - git pull > nul 2>&1
+    - .\bootstrap-vcpkg.bat > nul 2>&1
     - vcpkg integrate install
     - cd %APPVEYOR_BUILD_FOLDER%
     - vcpkg install fftw3:x64-windows
     - vcpkg install gsl:x64-windows
     - vcpkg install sdl1:x64-windows
-    - vcpkg install zeromq:x64-windows
+    #- vcpkg install zeromq:x64-windows
 
     - pip install sphinx
     - pip install pyqt5
@@ -76,25 +100,43 @@ build_script:
     - cd c:\projects\gnuradio\build
     - cmake -G "%VS%" \
             -DCMAKE_TOOLCHAIN_FILE="c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" \
-            -DBOOST_ROOT=C:\Libraries\boost_1_69_0 \
+            -DBOOST_ROOT=C:\deps\boost_out \
             -DSWIG_EXECUTABLE:FILEPATH=C:/deps/swig/swigwin-3.0.8/swig.exe \
             -DLOG4CPP_INCLUDE_DIR:PATH=C:/deps/log4cpp/Library/include \
             -DLOG4CPP_LIBRARY:FILEPATH=C:/deps/log4cpp/Library/lib/log4cpp.lib \
             -DMPIR_INCLUDE_DIR:PATH=C:/deps/mpir/Library/include \
             -DMPIR_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpir_static.lib \
             -DMPIRXX_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpirxx_static.lib \
-            -DQWT_INCLUDE_DIRS:PATH=C:/deps/qwt/Library/include \
-            -DQWT_LIBRARIES:FILEPATH=C:/deps/qwt/Library/lib/qwt.lib \
+            -DQWT_INCLUDE_DIRS:PATH=C:/deps/Qwt-6.1.5-svn/include \
+            -DQWT_LIBRARIES:FILEPATH=C:/deps/Qwt-6.1.5-svn/lib/qwt.lib \
+            -DUHD_INCLUDE_DIRS:PATH=C:/deps/uhd/include \
+            -DUHD_LIBRARIES:FILEPATH=C:/deps/uhd/lib/uhd.lib \
             -DENABLE_INTERNAL_VOLK:BOOL=ON \
-            -DENABLE_GR_AUDIO:BOOL=OFF \
-            -DENABLE_GR_QTGUI:BOOL=OFF ..
-    - cmake --build . --config Release --target INSTALL
+            -DENABLE_DOXYGEN:BOOL=OFF \
+            -DENABLE_GR_UHD:BOOL=ON \
+            -DENABLE_GR_ZEROMQ:BOOL=OFF \
+            -DENABLE_GR_AUDIO:BOOL=ON \
+            -DENABLE_GR_VOCODER:BOOL=ON \
+            -DENABLE_GR_DTV:BOOL=ON \
+            -DENABLE_GR_TRELLIS:BOOL=ON \
+            -DENABLE_GR_CHANNELS:BOOL=ON \
+            -DENABLE_GR_WAVELET:BOOL=ON \
+            -DENABLE_GR_VIDEO_SDL:BOOL=ON \
+            -DENABLE_GR_QTGUI:BOOL=ON ..
+    - cmake --build . --config Release -j 2 --target INSTALL
     # Collect libs
     - mkdir .\gnuradio\deps
     - copy C:\Tools\vcpkg\installed\x64-windows\lib\*.lib .\gnuradio\deps\
     - copy c:\tools\vcpkg\installed\x64-windows\bin\*.dll .\gnuradio\deps\
     - xcopy c:\deps\* .\gnuradio\deps\ /s /e
-    # Create archive
+    # Create archives
+    - 7z a "c:\gnuradio-deps-x64.zip" .\gnuradio\deps
+    - appveyor PushArtifact c:\gnuradio-deps-x64.zip
     - cd "c:\Program Files"
     - 7z a "c:\gnuradio-x64.zip" gnuradio
     - appveyor PushArtifact c:\gnuradio-x64.zip
+    
+#on_finish:
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+    
