@@ -8,7 +8,7 @@ environment:
     PYTHON: C:\Python37-x64
     #MINICONDA: C:\Miniconda3-x64
     QT: C:\Qt\5.13.2\msvc2017_64
-    VCVARPATH: "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build"
+    VCVARPATH: "C:\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build"
 
 cache: c:\tools\vcpkg\installed\
 
@@ -29,6 +29,7 @@ install:
     - "%QT%\\bin\\qtenv2.bat"
     - cd "c:\qwt-6.1"
     - dir
+    - dir "%VCVARPATH%"
     - "%VCVARPATH%\\vcvars64.bat"
     - qmake qwt.pro
     - nmake
