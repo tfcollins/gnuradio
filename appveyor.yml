@@ -29,6 +29,7 @@ install:
     - "%QT%\\bin\\qtenv2.bat"
     - cd "c:\qwt-6.1"
     - dir
+    - echo "%VCVARPATH%"
     - dir "%VCVARPATH%"
     - "%VCVARPATH%\\vcvars64.bat"
     - qmake qwt.pro
