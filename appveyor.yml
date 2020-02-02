@@ -31,7 +31,7 @@ install:
     - dir
     - echo "%VCVARPATH%"
     - dir "%VCVARPATH%"
-    - %VCVARPATH%\\vcvars64.bat
+    - "%VCVARPATH%"\vcvars64.bat
     - qmake qwt.pro
     - nmake
     - nmake install
