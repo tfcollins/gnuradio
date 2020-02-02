@@ -22,11 +22,12 @@ install:
     - mkdir C:\deps
 
     - svn export svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 
-    - cd qwt-6.1
+    - cd "c:\qwt-6.1"
     - dir "C:\Qt\5.13.2\msvc2017_64"
     - dir "C:\Qt\5.13.2\msvc2017_64\bin"
     - dir "%QT%\\bin"
     - "%QT%\\bin\\qtenv2.bat"
+    - dir
     - qmake qwt.pro
     - nmake
     - nmake install
