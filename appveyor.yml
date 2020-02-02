@@ -23,6 +23,7 @@ install:
 
     - svn export svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 
     - cd qwt-6.1
+    - "%QT%\bin\qtenv2.bat"
     - qmake qwt.pro
     - nmake
     - nmake install
