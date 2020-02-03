@@ -103,7 +103,7 @@ build_script:
     - cd c:\projects\gnuradio\build
     - cmake -G "%VS%" \
             -DCMAKE_TOOLCHAIN_FILE="c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" \
-            -DBOOST_ROOT=C:\Libraries\boost_1_69_0 \
+            -DBOOST_ROOT=C:\Libraries\boost_1_71_0 \
             -DSWIG_EXECUTABLE:FILEPATH=C:/deps/swig/swigwin-3.0.8/swig.exe \
             -DLOG4CPP_INCLUDE_DIR:PATH=C:/deps/log4cpp/Library/include \
             -DLOG4CPP_LIBRARY:FILEPATH=C:/deps/log4cpp/Library/lib/log4cpp.lib \
