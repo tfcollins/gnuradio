@@ -8,7 +8,6 @@ environment:
     PYTHON: C:\Python37-x64
     #MINICONDA: C:\Miniconda3-x64
     QT: C:\Qt\5.13.2\msvc2017_64
-    VCVARPATH: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build"
     VCVARPATHBAT: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
 
 cache: c:\tools\vcpkg\installed\
@@ -24,15 +23,8 @@ install:
     - mkdir C:\deps
 
     - svn export svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 
-    - dir "C:\Qt\5.13.2\msvc2017_64"
-    - dir "C:\Qt\5.13.2\msvc2017_64\bin"
-    - dir "%QT%\\bin"
     - "%QT%\\bin\\qtenv2.bat"
     - cd "c:\qwt-6.1"
-    - dir
-    - echo "%VCVARPATH%"
-    - dir "%VCVARPATH%"
-    - echo "%VCVARPATHBAT%"
     - call "%VCVARPATHBAT%"
     - qmake qwt.pro
     - nmake
@@ -48,10 +40,10 @@ install:
     - tar -C C:\deps\mpir -xf mpir.tar.bz2
     - rm mpir.tar.bz2
 
-    - wget https://anaconda.org/conda-forge/qwt/6.1.4/download/win-64/qwt-6.1.4-hd7ce7fb_1004.tar.bz2 -q -O "qwt.tar.bz2"
-    - mkdir C:\deps\qwt
-    - tar -C C:\deps\qwt -xf qwt.tar.bz2
-    - rm qwt.tar.bz2
+      #- wget https://anaconda.org/conda-forge/qwt/6.1.4/download/win-64/qwt-6.1.4-hd7ce7fb_1004.tar.bz2 -q -O "qwt.tar.bz2"
+      # - mkdir C:\deps\qwt
+      # - tar -C C:\deps\qwt -xf qwt.tar.bz2
+      # - rm qwt.tar.bz2
 
     - wget https://sourceforge.net/projects/swig/files/swigwin/swigwin-3.0.8/swigwin-3.0.8.zip -q -O "swig.zip"
     - mkdir C:\deps\swig
@@ -116,8 +108,8 @@ build_script:
             -DMPIR_INCLUDE_DIR:PATH=C:/deps/mpir/Library/include \
             -DMPIR_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpir_static.lib \
             -DMPIRXX_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpirxx_static.lib \
-            -DQWT_INCLUDE_DIRS:PATH=C:/deps/qwt/Library/include \
-            -DQWT_LIBRARIES:FILEPATH=C:/deps/qwt/Library/lib/qwt.lib \
+            -DQWT_INCLUDE_DIRS:PATH=C:/qwt-6.1/include \
+            -DQWT_LIBRARIES:FILEPATH=C:/deps/qwt/lib/qwt.lib \
             -DENABLE_INTERNAL_VOLK:BOOL=ON \
             -DENABLE_GR_AUDIO:BOOL=OFF \
             -DENABLE_GR_VOCODER:BOOL=OFF \
@@ -126,7 +118,7 @@ build_script:
             -DENABLE_GR_CHANNELS:BOOL=OFF \
             -DENABLE_GR_WAVELET:BOOL=OFF \
             -DENABLE_GR_VIDEO_SDL:BOOL=OFF \
-            -DENABLE_GR_QTGUI:BOOL=OFF ..
+            -DENABLE_GR_QTGUI:BOOL=ON ..
     - cmake --build . --config Release -j 2 --target INSTALL
     # Collect libs
     - mkdir .\gnuradio\deps
