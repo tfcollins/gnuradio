@@ -29,6 +29,8 @@ install:
     - qmake qwt.pro
     - nmake
     - nmake install
+    - "SET PATH=C:\\Qwt-6.1.5-svn\\lib;%PATH%"
+    - "SET PATH=C:\\Qwt-6.1.5-svn\\include;%PATH%"
 
     - wget https://anaconda.org/conda-forge/log4cpp/1.1.3/download/win-64/log4cpp-1.1.3-h6538335_1001.tar.bz2 -q -O "log4cpp.tar.bz2"
     - mkdir C:\deps\log4cpp
