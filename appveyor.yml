@@ -110,8 +110,8 @@ build_script:
             -DMPIR_INCLUDE_DIR:PATH=C:/deps/mpir/Library/include \
             -DMPIR_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpir_static.lib \
             -DMPIRXX_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpirxx_static.lib \
-            -DQWT_INCLUDE_DIRS:PATH=C:/qwt-6.1/include \
-            -DQWT_LIBRARIES:FILEPATH=C:/deps/qwt/lib/qwt.lib \
+            -DQWT_INCLUDE_DIRS:PATH=C:/Qwt-6.1.5-svn/include \
+            -DQWT_LIBRARIES:FILEPATH=C:/Qwt-6.1.5-svn/lib/qwt.lib \
             -DENABLE_INTERNAL_VOLK:BOOL=ON \
             -DENABLE_GR_AUDIO:BOOL=OFF \
             -DENABLE_GR_VOCODER:BOOL=OFF \
