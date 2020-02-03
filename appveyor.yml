@@ -9,6 +9,7 @@ environment:
     #MINICONDA: C:\Miniconda3-x64
     QT: C:\Qt\5.13.2\msvc2017_64
     VCVARPATH: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build"
+    VCVARPATHBAT: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
 
 cache: c:\tools\vcpkg\installed\
 
@@ -31,7 +32,8 @@ install:
     - dir
     - echo "%VCVARPATH%"
     - dir "%VCVARPATH%"
-    - "%VCVARPATH%"\\vcvars64.bat
+    - echo "%VCVARPATHBAT%"
+    - "%VCVARPATHBAT%"
     - qmake qwt.pro
     - nmake
     - nmake install
