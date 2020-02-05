@@ -18,6 +18,7 @@ install:
     - cd c:\
     - choco install -y wget
     - choco install -y svn
+    - choco install -y doxygen
     - mkdir C:\deps
     
     - cd C:\deps
@@ -100,6 +101,7 @@ build_script:
             -DQWT_LIBRARIES:FILEPATH=C:/deps/Qwt-6.1.5-svn/lib/qwt.lib \
             -DENABLE_INTERNAL_VOLK:BOOL=ON \
             -DENABLE_DOXYGEN:BOOL=ON \
+            -DENABLE_ZEROMQ:BOOL=ON \
             -DENABLE_GR_AUDIO:BOOL=ON \
             -DENABLE_GR_VOCODER:BOOL=ON \
             -DENABLE_GR_DTV:BOOL=ON \
