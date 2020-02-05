@@ -18,7 +18,7 @@ install:
     - cd c:\
     - choco install -y wget
     - choco install -y svn
-    - choco install -y doxygen
+    - choco install -y doxygen.install
     - mkdir C:\deps
     
     - cd C:\deps
