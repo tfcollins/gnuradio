@@ -26,7 +26,7 @@ install:
     - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.1/boost.7z -O boost.7z
     - 7z x boost.7z
     - rm boost.7z
-    - wget https://gist.githubusercontent.com/tfcollins/9bab5e9de74adf6d74f792e34dbb00df/raw/f1ccd9549a7e16bdfe7f51009584c4ebbe5830e4/system_category_win32.hpp -O C:\deps\boost_out\include\boost-1_70\boost\system\detail\system_category_win32.hpp
+    #- wget https://gist.githubusercontent.com/tfcollins/9bab5e9de74adf6d74f792e34dbb00df/raw/f1ccd9549a7e16bdfe7f51009584c4ebbe5830e4/system_category_win32.hpp -O C:\deps\boost_out\include\boost-1_70\boost\system\detail\system_category_win32.hpp
     - dir
     - cd c:\
     
