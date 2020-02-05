@@ -107,7 +107,7 @@ build_script:
     - mkdir c:\projects\gnuradio\build
     - cd c:\projects\gnuradio\build
     - cmake -G "%VS%" \
-            -DHAVE_SNPRINTF \
+            -DHAVE_SNPRINTF:BOOL=ON \
             -DCMAKE_TOOLCHAIN_FILE="c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" \
             -DBOOST_ROOT=C:\deps\boost_out \
             -DSWIG_EXECUTABLE:FILEPATH=C:/deps/swig/swigwin-3.0.8/swig.exe \
