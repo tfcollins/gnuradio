@@ -21,16 +21,21 @@ install:
     - choco install -y wget
     - choco install -y svn
     - mkdir C:\deps
-
-    - svn export svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 
-    - "%QT%\\bin\\qtenv2.bat"
-    - cd "c:\qwt-6.1"
-    - call "%VCVARPATHBAT%"
-    - qmake qwt.pro
-    - nmake
-    - nmake install
-    - "SET PATH=C:\\Qwt-6.1.5-svn\\lib;%PATH%"
-    - "SET PATH=C:\\Qwt-6.1.5-svn\\include;%PATH%"
+    
+    - cd C:\deps
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.1/boost.7z -O boost.7z
+    - 7z x boost.7z
+    - rm boost.7z
+    - dir
+    - cd c:\
+    
+    - cd C:\deps
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.1/Qwt_6_1_5.7z -O Qwt_6_1_5.7z
+    - 7z x Qwt_6_1_5.7z
+    - rm Qwt_6_1_5.7z
+    - cd C:\
+    - "SET PATH=C:\\deps\\Qwt-6.1.5-svn\\lib;%PATH%"
+    - "SET PATH=C:\\deps\\Qwt-6.1.5-svn\\include;%PATH%"
 
     - wget https://anaconda.org/conda-forge/log4cpp/1.1.3/download/win-64/log4cpp-1.1.3-h6538335_1001.tar.bz2 -q -O "log4cpp.tar.bz2"
     - mkdir C:\deps\log4cpp
@@ -103,15 +108,15 @@ build_script:
     - cd c:\projects\gnuradio\build
     - cmake -G "%VS%" \
             -DCMAKE_TOOLCHAIN_FILE="c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake" \
-            -DBOOST_ROOT=C:\Libraries\boost_1_71_0 \
+            -DBOOST_ROOT=C:\deps\boost_out \
             -DSWIG_EXECUTABLE:FILEPATH=C:/deps/swig/swigwin-3.0.8/swig.exe \
             -DLOG4CPP_INCLUDE_DIR:PATH=C:/deps/log4cpp/Library/include \
             -DLOG4CPP_LIBRARY:FILEPATH=C:/deps/log4cpp/Library/lib/log4cpp.lib \
             -DMPIR_INCLUDE_DIR:PATH=C:/deps/mpir/Library/include \
             -DMPIR_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpir_static.lib \
             -DMPIRXX_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpirxx_static.lib \
-            -DQWT_INCLUDE_DIRS:PATH=C:/Qwt-6.1.5-svn/include \
-            -DQWT_LIBRARIES:FILEPATH=C:/Qwt-6.1.5-svn/lib/qwt.lib \
+            -DQWT_INCLUDE_DIRS:PATH=C:/deps/Qwt-6.1.5-svn/include \
+            -DQWT_LIBRARIES:FILEPATH=C:/deps/Qwt-6.1.5-svn/lib/qwt.lib \
             -DENABLE_INTERNAL_VOLK:BOOL=ON \
             -DENABLE_GR_AUDIO:BOOL=OFF \
             -DENABLE_GR_VOCODER:BOOL=OFF \
