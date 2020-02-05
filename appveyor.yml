@@ -26,7 +26,6 @@ install:
     - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.1/boost.7z -O boost.7z
     - 7z x boost.7z
     - rm boost.7z
-    #- wget https://gist.githubusercontent.com/tfcollins/9bab5e9de74adf6d74f792e34dbb00df/raw/f1ccd9549a7e16bdfe7f51009584c4ebbe5830e4/system_category_win32.hpp -O C:\deps\boost_out\include\boost-1_70\boost\system\detail\system_category_win32.hpp
     - dir
     - cd c:\
     
@@ -48,41 +47,24 @@ install:
     - tar -C C:\deps\mpir -xf mpir.tar.bz2
     - rm mpir.tar.bz2
 
-      #- wget https://anaconda.org/conda-forge/qwt/6.1.4/download/win-64/qwt-6.1.4-hd7ce7fb_1004.tar.bz2 -q -O "qwt.tar.bz2"
-      # - mkdir C:\deps\qwt
-      # - tar -C C:\deps\qwt -xf qwt.tar.bz2
-      # - rm qwt.tar.bz2
-
     - wget https://sourceforge.net/projects/swig/files/swigwin/swigwin-3.0.8/swigwin-3.0.8.zip -q -O "swig.zip"
     - mkdir C:\deps\swig
     - unzip -qq swig.zip -d C:\deps\swig\
     - rm swig.zip
 
-    #- wget https://ci.appveyor.com/api/buildjobs/udevrgym9k2rexrn/artifacts/gvsbuild-vs14-x64.tar.gz -q -O "gtk.tar.gz"
     - wget https://ci.appveyor.com/api/buildjobs/v8mpwb84x5swl64r/artifacts/gvsbuild-vs15-x64.tar.gz -q -O "gtk.tar.gz"
-    #- wget https://ci.appveyor.com/api/buildjobs/2vcvagpfd32w0qnv/artifacts/gvsbuild-vs14-x86.tar.gz -q -O "gtk.tar.gz"
     - mkdir C:\deps\gtk
     - tar -C C:\deps\gtk -xf gtk.tar.gz
     - rm gtk.tar.gz
     - mv C:\\deps\\gtk\\release C:\\gvsbuild
-    #- "SET PATH=C:\\deps\\gtk\\release;%PATH%"
     - "SET PATH=C:\\gvsbuild;%PATH%"
     - "SET PATH=C:\\gvsbuild\\lib;%PATH%"
     - "SET PATH=C:\\gvsbuild\\bin;%PATH%"
     - "SET PYTHONPATH=C:\\gvsbuild;%PYTHONPATH%"
     - "SET PYTHONPATH=C:\\gvsbuild\\lib;%PYTHONPATH%"
     - "SET PYTHONPATH=C:\\gvsbuild\\bin;%PYTHONPATH%"
-    #- pip install -v C:\deps\gtk\release\python\pycairo-1.18.0-cp37-cp37m-win_amd64.whl
-    #- pip install -v C:\deps\gtk\release\python\PyGObject-3.32.0-cp37-cp37m-win_amd64.whl
     - pip install C:\gvsbuild\python\pycairo-1.18.0-cp37-cp37m-win_amd64.whl
-    - pip install C:\gvsbuild\python\PyGObject-3.32.0-cp37-cp37m-win_amd64.whl
-
-      #    - python -m pip install --upgrade pip    
-      #    - pip install pipwin
-      #    - pipwin refresh
-      #    - pipwin install pygtk
-      #    - pipwin install pycairo_gtk
-      #    - pipwin install pygobject   
+    - pip install C:\gvsbuild\python\PyGObject-3.32.0-cp37-cp37m-win_amd64.whl 
 
     - cd C:\tools\vcpkg
     - git pull > nul 2>&1
@@ -119,13 +101,13 @@ build_script:
             -DQWT_INCLUDE_DIRS:PATH=C:/deps/Qwt-6.1.5-svn/include \
             -DQWT_LIBRARIES:FILEPATH=C:/deps/Qwt-6.1.5-svn/lib/qwt.lib \
             -DENABLE_INTERNAL_VOLK:BOOL=ON \
-            -DENABLE_GR_AUDIO:BOOL=OFF \
-            -DENABLE_GR_VOCODER:BOOL=OFF \
-            -DENABLE_GR_DTV:BOOL=OFF \
-            -DENABLE_GR_TRELLIS:BOOL=OFF \
-            -DENABLE_GR_CHANNELS:BOOL=OFF \
-            -DENABLE_GR_WAVELET:BOOL=OFF \
-            -DENABLE_GR_VIDEO_SDL:BOOL=OFF \
+            -DENABLE_GR_AUDIO:BOOL=ON \
+            -DENABLE_GR_VOCODER:BOOL=ON \
+            -DENABLE_GR_DTV:BOOL=ON \
+            -DENABLE_GR_TRELLIS:BOOL=ON \
+            -DENABLE_GR_CHANNELS:BOOL=ON \
+            -DENABLE_GR_WAVELET:BOOL=ON \
+            -DENABLE_GR_VIDEO_SDL:BOOL=ON \
             -DENABLE_GR_QTGUI:BOOL=ON ..
     - cmake --build . --config Release -j 2 --target INSTALL
     # Collect libs
