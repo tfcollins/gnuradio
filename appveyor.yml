@@ -6,7 +6,6 @@ image:
 environment:
     VS: "Visual Studio 15 Win64"
     PYTHON: C:\Python37-x64
-    #MINICONDA: C:\Miniconda3-x64
     QT: C:\Qt\5.13.2\msvc2017_64
     VCVARPATHBAT: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
 
@@ -15,7 +14,6 @@ cache: c:\tools\vcpkg\installed\
 install:
     - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
     - "SET PATH=%QT%;%PATH%"
-    #- "SET PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%" 
     - git submodule update --init
     - cd c:\
     - choco install -y wget
@@ -101,6 +99,7 @@ build_script:
             -DQWT_INCLUDE_DIRS:PATH=C:/deps/Qwt-6.1.5-svn/include \
             -DQWT_LIBRARIES:FILEPATH=C:/deps/Qwt-6.1.5-svn/lib/qwt.lib \
             -DENABLE_INTERNAL_VOLK:BOOL=ON \
+            -DENABLE_DOXYGEN:BOOL=ON \
             -DENABLE_GR_AUDIO:BOOL=ON \
             -DENABLE_GR_VOCODER:BOOL=ON \
             -DENABLE_GR_DTV:BOOL=ON \
