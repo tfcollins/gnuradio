@@ -18,7 +18,7 @@ install:
     - cd c:\
     - choco install -y wget
     - choco install -y svn
-    - choco install -y doxygen.install
+    #- choco install -y doxygen.install
     - mkdir C:\deps
     
     - cd C:\deps
@@ -77,7 +77,7 @@ install:
     - vcpkg install fftw3:x64-windows
     - vcpkg install gsl:x64-windows
     - vcpkg install sdl1:x64-windows
-    - vcpkg install zeromq:x64-windows
+    #- vcpkg install zeromq:x64-windows
 
     - pip install sphinx
     - pip install pyqt5
@@ -103,9 +103,11 @@ build_script:
             -DMPIRXX_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpirxx_static.lib \
             -DQWT_INCLUDE_DIRS:PATH=C:/deps/Qwt-6.1.5-svn/include \
             -DQWT_LIBRARIES:FILEPATH=C:/deps/Qwt-6.1.5-svn/lib/qwt.lib \
+            -DZEROMQ_LIBRARIES:FILEPATH=C:\deps\libzmq \
+            -DZEROMQ_INCLUDE_DIRS:FILEPATH=C:\deps\libzmq \
             -DENABLE_INTERNAL_VOLK:BOOL=ON \
-            -DENABLE_DOXYGEN:BOOL=ON \
-            -DENABLE_GR_ZEROMQ:BOOL=OFF \
+            -DENABLE_DOXYGEN:BOOL=OFF \
+            -DENABLE_GR_ZEROMQ:BOOL=ON \
             -DENABLE_GR_AUDIO:BOOL=ON \
             -DENABLE_GR_VOCODER:BOOL=ON \
             -DENABLE_GR_DTV:BOOL=ON \
