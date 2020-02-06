@@ -107,7 +107,7 @@ build_script:
             -DZEROMQ_INCLUDE_DIRS:FILEPATH=C:\deps\libzmq \
             -DENABLE_INTERNAL_VOLK:BOOL=ON \
             -DENABLE_DOXYGEN:BOOL=ON \
-            -DENABLE_GR_ZEROMQ:BOOL=ON \
+            -DENABLE_GR_ZEROMQ:BOOL=OFF \
             -DENABLE_GR_AUDIO:BOOL=ON \
             -DENABLE_GR_VOCODER:BOOL=ON \
             -DENABLE_GR_DTV:BOOL=ON \
