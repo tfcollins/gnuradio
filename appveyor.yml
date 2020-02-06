@@ -45,6 +45,10 @@ install:
     - mkdir C:\deps\mpir
     - tar -C C:\deps\mpir -xf mpir.tar.bz2
     - rm mpir.tar.bz2
+    
+    - wget https://dl.bintray.com/zeromq/generic/libzmq-v141-x64-4_3_2.zip -O libzmq.zip
+    - mkdir C:\deps\libzmq
+    - unzip -qq libzmq.zip -d C:\deps\libzmq
 
     - wget https://sourceforge.net/projects/swig/files/swigwin/swigwin-3.0.8/swigwin-3.0.8.zip -q -O "swig.zip"
     - mkdir C:\deps\swig
@@ -99,6 +103,8 @@ build_script:
             -DMPIRXX_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpirxx_static.lib \
             -DQWT_INCLUDE_DIRS:PATH=C:/deps/Qwt-6.1.5-svn/include \
             -DQWT_LIBRARIES:FILEPATH=C:/deps/Qwt-6.1.5-svn/lib/qwt.lib \
+            -DZEROMQ_LIBRARIES:FILEPATH=C:\deps\libzmq \
+            -DZEROMQ_INCLUDE_DIRS:FILEPATH=C:\deps\libzmq \
             -DENABLE_INTERNAL_VOLK:BOOL=ON \
             -DENABLE_DOXYGEN:BOOL=ON \
             -DENABLE_GR_ZEROMQ:BOOL=ON \
