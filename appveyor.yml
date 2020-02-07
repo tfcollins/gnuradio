@@ -22,14 +22,14 @@ install:
     - mkdir C:\deps
     
     - cd C:\deps
-    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.1/boost.7z -O boost.7z
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.1/boost.7z -q -O boost.7z
     - 7z x boost.7z
     - rm boost.7z
     - dir
     - cd c:\
     
     - cd C:\deps
-    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.1/Qwt_6_1_5.7z -O Qwt_6_1_5.7z
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.1/Qwt_6_1_5.7z -q -O Qwt_6_1_5.7z
     - 7z x Qwt_6_1_5.7z
     - rm Qwt_6_1_5.7z
     - cd C:\
