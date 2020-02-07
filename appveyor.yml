@@ -103,11 +103,9 @@ build_script:
             -DMPIRXX_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpirxx_static.lib \
             -DQWT_INCLUDE_DIRS:PATH=C:/deps/Qwt-6.1.5-svn/include \
             -DQWT_LIBRARIES:FILEPATH=C:/deps/Qwt-6.1.5-svn/lib/qwt.lib \
-            -DZEROMQ_LIBRARIES:FILEPATH=C:\deps\libzmq \
-            -DZEROMQ_INCLUDE_DIRS:FILEPATH=C:\deps\libzmq \
             -DENABLE_INTERNAL_VOLK:BOOL=ON \
             -DENABLE_DOXYGEN:BOOL=OFF \
-            -DENABLE_GR_ZEROMQ:BOOL=ON \
+            -DENABLE_GR_ZEROMQ:BOOL=OFF \
             -DENABLE_GR_AUDIO:BOOL=ON \
             -DENABLE_GR_VOCODER:BOOL=ON \
             -DENABLE_GR_DTV:BOOL=ON \
