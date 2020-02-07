@@ -46,7 +46,7 @@ install:
     - tar -C C:\deps\mpir -xf mpir.tar.bz2
     - rm mpir.tar.bz2
     
-    - wget https://dl.bintray.com/zeromq/generic/libzmq-v141-x64-4_3_2.zip -O libzmq.zip
+    - wget https://dl.bintray.com/zeromq/generic/libzmq-v141-x64-4_3_2.zip -q -O libzmq.zip
     - mkdir C:\deps\libzmq
     - unzip -qq libzmq.zip -d C:\deps\libzmq
 
