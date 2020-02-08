@@ -71,8 +71,8 @@ install:
     - "SET PYTHONPATH=C:\\gvsbuild;%PYTHONPATH%"
     - "SET PYTHONPATH=C:\\gvsbuild\\lib;%PYTHONPATH%"
     - "SET PYTHONPATH=C:\\gvsbuild\\bin;%PYTHONPATH%"
-    - pip install C:\gvsbuild\python\pycairo-1.18.0-cp37-cp37m-win_amd64.whl
-    - pip install C:\gvsbuild\python\PyGObject-3.32.0-cp37-cp37m-win_amd64.whl 
+    - pip install C:\gvsbuild\python\pycairo-1.18.2-cp37-cp37m-win_amd64.whl
+    - pip install C:\gvsbuild\python\PyGObject-3.34.0-cp37-cp37m-win_amd64.whl 
 
     - cd C:\tools\vcpkg
     - git pull > nul 2>&1
