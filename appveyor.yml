@@ -64,7 +64,8 @@ install:
     - mkdir C:\deps\gtk
     - 7z x gvsbuild-vs15-x64.7z -oC:\deps\gtk
     - rm gvsbuild-vs15-x64.7z
-    - dir C:\\deps\\gtk 
+    - dir C:\deps\gtk
+    
     - mv C:\\deps\\gtk\\release C:\\gvsbuild
     - "SET PATH=C:\\gvsbuild;%PATH%"
     - "SET PATH=C:\\gvsbuild\\lib;%PATH%"
