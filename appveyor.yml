@@ -54,6 +54,7 @@ install:
     - mkdir C:\deps\swig
     - 7z x swig.7z -oC:\deps\swig
     - rm swig.7z
+    - dir C:\deps\swig
 
     - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/uhd.7z -q -O "uhd.7z"
     - mkdir C:\deps\uhd
