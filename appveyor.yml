@@ -22,38 +22,43 @@ install:
     - mkdir C:\deps
     
     - cd C:\deps
-    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.1/boost.7z -q -O boost.7z
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/boost.7z -q -O boost.7z
     - 7z x boost.7z
     - rm boost.7z
     - dir
     - cd c:\
     
     - cd C:\deps
-    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.1/Qwt_6_1_5.7z -q -O Qwt_6_1_5.7z
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/Qwt_6_1_5.7z -q -O Qwt_6_1_5.7z
     - 7z x Qwt_6_1_5.7z
     - rm Qwt_6_1_5.7z
     - cd C:\
     - "SET PATH=C:\\deps\\Qwt-6.1.5-svn\\lib;%PATH%"
     - "SET PATH=C:\\deps\\Qwt-6.1.5-svn\\include;%PATH%"
 
-    - wget https://anaconda.org/conda-forge/log4cpp/1.1.3/download/win-64/log4cpp-1.1.3-h6538335_1001.tar.bz2 -q -O "log4cpp.tar.bz2"
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/log4cpp.7z -q -O "log4cpp.7z"
     - mkdir C:\deps\log4cpp
-    - tar -C C:\deps\log4cpp -xf log4cpp.tar.bz2
-    - rm log4cpp.tar.bz2
-        
-    - wget https://anaconda.org/anaconda/mpir/3.0.0/download/win-64/mpir-3.0.0-hec2e145_1.tar.bz2 -q -O "mpir.tar.bz2"
+    - 7z x log4cpp.7z -oC:\deps\log4cpp
+    - rm log4cpp.7z
+    
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/mpir.7z -q -O "mpir.7z"
     - mkdir C:\deps\mpir
-    - tar -C C:\deps\mpir -xf mpir.tar.bz2
-    - rm mpir.tar.bz2
+    - 7z x mpir.7z -oC:\deps\mpir
+    - rm mpir.7z
     
     - wget https://dl.bintray.com/zeromq/generic/libzmq-v141-x64-4_3_2.zip -q -O libzmq.zip
     - mkdir C:\deps\libzmq
     - unzip -qq libzmq.zip -d C:\deps\libzmq
 
-    - wget https://sourceforge.net/projects/swig/files/swigwin/swigwin-3.0.8/swigwin-3.0.8.zip -q -O "swig.zip"
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/swig.7z -q -O "swig.7z"
     - mkdir C:\deps\swig
-    - unzip -qq swig.zip -d C:\deps\swig\
-    - rm swig.zip
+    - 7z x swig.7z -oC:\deps\swig
+    - rm log4cpp.7z
+
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/uhd.7z -q -O "uhd.7z"
+    - mkdir C:\deps\uhd
+    - 7z x uhd.7z -oC:\deps\uhd
+    - rm uhd.7z
 
     - wget https://ci.appveyor.com/api/buildjobs/v8mpwb84x5swl64r/artifacts/gvsbuild-vs15-x64.tar.gz -q -O "gtk.tar.gz"
     - mkdir C:\deps\gtk
@@ -103,8 +108,11 @@ build_script:
             -DMPIRXX_LIBRARY:FILEPATH=C:/deps/mpir/Library/lib/mpirxx_static.lib \
             -DQWT_INCLUDE_DIRS:PATH=C:/deps/Qwt-6.1.5-svn/include \
             -DQWT_LIBRARIES:FILEPATH=C:/deps/Qwt-6.1.5-svn/lib/qwt.lib \
+            -DUHD_INCLUDE_DIRS:PATH=C:/deps/uhd/include \
+            -DUHD_LIBRARIES:FILEPATH=C:/deps/uhd/lib/uhd.lib \
             -DENABLE_INTERNAL_VOLK:BOOL=ON \
             -DENABLE_DOXYGEN:BOOL=OFF \
+            -DENABLE_GR_UHD:BOOL=ON \
             -DENABLE_GR_ZEROMQ:BOOL=OFF \
             -DENABLE_GR_AUDIO:BOOL=ON \
             -DENABLE_GR_VOCODER:BOOL=ON \
