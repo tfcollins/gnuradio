@@ -38,12 +38,12 @@ install:
 
     - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/log4cpp.7z -q -O "log4cpp.7z"
     - mkdir C:\deps\log4cpp
-    - 7z x log4cpp.7z -oC:\deps\log4cpp
+    - 7z x log4cpp.7z -oC:\deps\
     - rm log4cpp.7z
     
     - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/mpir.7z -q -O "mpir.7z"
     - mkdir C:\deps\mpir
-    - 7z x mpir.7z -oC:\deps\mpir
+    - 7z x mpir.7z -oC:\deps\
     - rm mpir.7z
     
     - wget https://dl.bintray.com/zeromq/generic/libzmq-v141-x64-4_3_2.zip -q -O libzmq.zip
@@ -52,13 +52,13 @@ install:
 
     - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/swig.7z -q -O "swig.7z"
     - mkdir C:\deps\swig
-    - 7z x swig.7z -oC:\deps\swig
+    - 7z x swig.7z -oC:\deps\
     - rm swig.7z
     - dir C:\deps\swig
 
     - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/uhd.7z -q -O "uhd.7z"
     - mkdir C:\deps\uhd
-    - 7z x uhd.7z -oC:\deps\uhd
+    - 7z x uhd.7z -oC:\deps\
     - rm uhd.7z
 
     - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/gvsbuild-vs15-x64.7z -q -O "gvsbuild-vs15-x64.7z"
