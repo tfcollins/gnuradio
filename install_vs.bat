@@ -1,3 +1,5 @@
+@echo off
+
 cd C:\deps
 wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/boost.7z -q -O boost.7z
 7z x boost.7z
