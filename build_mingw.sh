@@ -62,6 +62,7 @@ build_gnuradio() {
 	cmake -G 'Unix Makefiles' \
 		${CMAKE_OPTS} \
 		-DENABLE_INTERNAL_VOLK:BOOL=ON \
+		-DSWIG_EXECUTABLE:FILEPATH=C:/deps/swig/swigwin-3.0.8/swig.exe \
 		-DCMAKE_C_FLAGS=-fno-asynchronous-unwind-tables \
 		${WORKDIR}/gnuradio
 

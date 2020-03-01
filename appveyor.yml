@@ -27,6 +27,11 @@ install:
     - choco install -y wget
     - choco install -y svn
     - mkdir C:\deps
+    - wget https://github.com/tfcollins/gr-win-dependencies/releases/download/v0.2/swig.7z -q -O "swig.7z"
+    - mkdir C:\deps\swig
+    - 7z x swig.7z -oC:\deps\
+    - rm swig.7z
+    - dir C:\deps\swig
     - C:\msys64\usr\bin\bash C:\projects\gnuradio\install_mingw.sh
       # - if [[ $COMPILER == 'vs' ]]; then C:\projects\gnuradio\install_vs.sh ; fi
     - pip install sphinx
