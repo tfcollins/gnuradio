@@ -27,12 +27,8 @@ install:
     - choco install -y wget
     - choco install -y svn
     - mkdir C:\deps
-    - sh: >-
-       If ($env:COMPILER -Match "mingw") {
-         C:\projects\gnuradio\install_vs.sh
-       } Else {
-         C:\projects\gnuradio\install_vs.sh
-       }
+    - if [[ $COMPILER == 'mingw' ]]; then C:\projects\gnuradio\install_vs.sh ; fi
+    - if [[ $COMPILER == 'vs' ]]; then C:\projects\gnuradio\install_vs.sh ; fi
     - pip install sphinx
     - pip install pyqt5
     - pip install pythonqwt
@@ -44,10 +40,5 @@ install:
     - pip install numpy
 
 build_script:
- - ps: >-
-    If ($env:COMPILER -Match "mingw") {
-      cd C:\projects\gnuradio
-      C:\msys64\usr\bin\bash build_mingw.sh
-    } Else {
-      C:\projects\gnuradio\build_vs.bat
-    }
+    - if [[ $COMPILER == 'mingw' ]]; then cd C:\projects\gnuradio; C:\msys64\usr\bin\bash build_mingw.sh; fi
+    - if [[ $COMPILER == 'vs' ]]; then C:\projects\gnuradio\build_vs.bat; fi
