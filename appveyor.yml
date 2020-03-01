@@ -27,14 +27,12 @@ install:
     - choco install -y wget
     - choco install -y svn
     - mkdir C:\deps
-    
-    - ps: >-
+    - sh: >-
        If ($env:COMPILER -Match "mingw") {
-         C:\projects\gnuradio\install_vs.bat
+         C:\projects\gnuradio\install_vs.sh
        } Else {
-         C:\projects\gnuradio\install_vs.bat
+         C:\projects\gnuradio\install_vs.sh
        }
-
     - pip install sphinx
     - pip install pyqt5
     - pip install pythonqwt
