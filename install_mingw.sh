@@ -23,11 +23,13 @@ DEPENDENCIES="
 	mingw-w64-${ARCH}-fftw \
 	mingw-w64-${ARCH}-orc \
 	glib2 \
+	mingw-w64-qwt-qt5 \
+	mingw-w64-swig \
+	mingw-w64-gtk3 \
 	python3-mako \
 	python3-six \
 	mingw-w64-${ARCH}-cmake \
 "
-#	mingw-w64-${ARCH}-cheetah
 
 $CC --version
 pacman --force --noconfirm -Sy ${DEPENDENCIES}

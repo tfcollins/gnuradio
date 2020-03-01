@@ -30,7 +30,7 @@ DEPENDENCIES="
 #	mingw-w64-${ARCH}-cheetah
 
 $CC --version
-pacman --force --noconfirm -Sy ${DEPENDENCIES}
+#pacman --force --noconfirm -Sy ${DEPENDENCIES}
 
 build_log4cpp() {
 	git clone https://github.com/orocos-toolchain/log4cpp ${WORKDIR}/log4cpp
@@ -61,18 +61,6 @@ build_gnuradio() {
 
 	cmake -G 'Unix Makefiles' \
 		${CMAKE_OPTS} \
-		-DENABLE_GR_DIGITAL:BOOL=OFF \
-		-DENABLE_GR_DTV:BOOL=OFF \
-		-DENABLE_GR_ATSC:BOOL=OFF \
-		-DENABLE_GR_AUDIO:BOOL=OFF \
-		-DENABLE_GR_CHANNELS:BOOL=OFF \
-		-DENABLE_GR_NOAA:BOOL=OFF \
-		-DENABLE_GR_PAGER:BOOL=OFF \
-		-DENABLE_GR_TRELLIS:BOOL=OFF \
-		-DENABLE_GR_VOCODER:BOOL=OFF \
-		-DENABLE_GR_FEC:BOOL=OFF \
-		-DENABLE_GR_LOG=OFF \
-		-DENABLE_DOXYGEN:BOOL=OFF \
 		-DENABLE_INTERNAL_VOLK:BOOL=ON \
 		-DCMAKE_C_FLAGS=-fno-asynchronous-unwind-tables \
 		${WORKDIR}/gnuradio
@@ -81,7 +69,7 @@ build_gnuradio() {
 	DESTDIR=${WORKDIR} make ${JOBS} install
 }
 
-build_log4cpp
+#build_log4cpp
 build_gnuradio
 
 tar cavf ${WORKDIR}/gnuradio-${MINGW_VERSION}.tar.xz -C ${WORKDIR} msys64
