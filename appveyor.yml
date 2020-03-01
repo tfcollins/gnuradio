@@ -40,5 +40,6 @@ install:
     - pip install numpy
 
 build_script:
-    - cd C:\projects\gnuradio; C:\msys64\usr\bin\bash build_mingw.sh
+    - cd C:\projects\gnuradio
+    - C:\msys64\usr\bin\bash build_mingw.sh
       # - if [[ $COMPILER == 'vs' ]]; then C:\projects\gnuradio\build_vs.bat; fi
