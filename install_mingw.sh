@@ -23,8 +23,10 @@ DEPENDENCIES="
 	mingw-w64-${ARCH}-fftw \
 	mingw-w64-${ARCH}-orc \
 	mingw-w64-${ARCH}-pango \
+	mingw-w64-${ARCH}-gsl \
 	mingw-w64-${ARCH}-python-cairo \
 	glib2 \
+	mingw-w64-${ARCH}-python-pyqt5 \
 	mingw-w64-${ARCH}-qwt-qt5 \
 	mingw-w64-${ARCH}-swig \
 	mingw-w64-${ARCH}-gtk3 \
